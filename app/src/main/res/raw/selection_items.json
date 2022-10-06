@@ -1,0 +1,86 @@
+[
+  {
+  "id": 0,
+  "category": "fruit",
+  "title": "Orange",
+  "image": "https://img.freepik.com/premium-photo/fresh-ripe-oranges-dark-background_87742-24567.jpg?w=360",
+  "selected": false
+  },
+  {
+    "id": 1,
+    "category": "fruit",
+    "title": "Apple",
+    "image": "https://img.freepik.com/premium-photo/red-apple-red-apple-background_33736-4257.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 2,
+    "category": "fruit",
+    "title": "Banana",
+    "image": "https://img.freepik.com/premium-photo/raw-organic-yellow-baby-bananas_696537-3774.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 3,
+    "category": "crops",
+    "title": "Potato",
+    "image": "https://img.freepik.com/premium-photo/raw-borwn-organic-russet-potatoes_696537-763.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 4,
+    "category": "crops",
+    "title": "Onion",
+    "image": "https://img.freepik.com/free-photo/top-view-red-onions-maroon-background_141793-5956.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 5,
+    "category": "crops",
+    "title": "Cotton",
+    "image": "https://img.freepik.com/premium-photo/cotton-field-agriculture-fresh-natural-life_693630-1485.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 6,
+    "category": "fruit",
+    "title": "Orange",
+    "image": "https://img.freepik.com/premium-photo/fresh-ripe-oranges-dark-background_87742-24567.jpg?w=360",
+    "selected": false
+  },
+  {
+    "id": 7,
+    "category": "fruit",
+    "title": "Apple",
+    "image": "https://img.freepik.com/premium-photo/red-apple-red-apple-background_33736-4257.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 8,
+    "category": "fruit",
+    "title": "Banana",
+    "image": "https://img.freepik.com/premium-photo/raw-organic-yellow-baby-bananas_696537-3774.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 9,
+    "category": "crops",
+    "title": "Potato",
+    "image": "https://img.freepik.com/premium-photo/raw-borwn-organic-russet-potatoes_696537-763.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 10,
+    "category": "crops",
+    "title": "Onion",
+    "image": "https://img.freepik.com/free-photo/top-view-red-onions-maroon-background_141793-5956.jpg?size=360",
+    "selected": false
+  },
+  {
+    "id": 11,
+    "category": "crops",
+    "title": "Cotton",
+    "image": "https://img.freepik.com/premium-photo/cotton-field-agriculture-fresh-natural-life_693630-1485.jpg?size=360",
+    "selected": false
+  }
+]

@@ -1,0 +1,43 @@
+<resources>
+    <string name="app_name">Ask To Agri Expert</string>
+    <string name="app_version" translatable="false">1.0.0</string>
+    <string name="app_code" translatable="false">1</string>
+    <string name="app_developer" translatable="false">HexCommand</string>
+    <string name="base_url" translatable="false">aHR0cHM6Ly9hc2t0b2FncmkucGxhbmNrc3R1ZGlvLmlu</string>
+    <string name="api_url" translatable="false">aHR0cHM6Ly9hc2t0b2FncmkucGxhbmNrc3R1ZGlvLmluL2FwaS92MS8</string>
+    <string name="api_key" translatable="false">dGhpc19pc19mYWNrX2FwaV9rZXk</string>
+    <string name="support_email" translatable="false">c3VwcG9ydEBoZXhjb21tYW5kLmlu</string>
+    <string name="default_lang">EN</string>
+    <string name="grant_permission">Grant Permission</string>
+    <string name="exit">Exit</string>
+    <string name="grant_a_permission">Grant a permission</string>
+    <string name="onboard_permission_caption">We require following device permission(s) to run our app perfectly</string>
+    <string name="onboard_permission_location">Requires location permission to provide you with an expert of your area</string>
+    <string name="onboard_permission_camera">Requires camera permission to capture a photo and video for your query</string>
+    <string name="onboard_permission_mic">Requires mic permission to record audio for your query</string>
+    <string name="continue_btn">Continue</string>
+    <string name="permission">Permission</string>
+    <string name="language">Language</string>
+    <string name="onboard_language_headline">Select your preferred language</string>
+    <string name="onboard_language_caption">We recommend $lang language based on your current location</string>
+    <string name="onboard_selection_headline">Select a crops</string>
+    <string name="onboard_selection_caption">Select at least 3 crops or fruit to get started</string>
+    <string name="english">English</string>
+    <string name="gujarati">Gujarati</string>
+    <string name="hindi">Hindi</string>
+    <string name="selected_language">You have selected the English language</string>
+    <string name="login_with_mobile">Login with Mobile</string>
+    <string name="send_otp">Send OTP</string>
+    <string name="use_without_login">Use without login</string>
+    <string name="mobile">mobile number</string>
+    <string name="welcome_note_guest">Welcome, You are using guest account</string>
+    <string name="otp">Enter OTP</string>
+    <string name="resent_otp">Resend</string>
+    <string name="verify_otp">Verify OTP</string>
+    <string name="submit">submit</string>
+    <string name="change_mobile">Change Mobile</string>
+    <string name="otp_init">OTP is being sent to your mobile number</string>
+    <string name="title">Title</string>
+    <string name="chat">Chat</string>
+    <string name="expert">Expert</string>
+</resources>

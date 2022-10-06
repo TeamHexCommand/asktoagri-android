@@ -1,0 +1,36 @@
+<resources>
+    <string name="app_name">કૃષિ નિષ્ણાતને પૂછો</string>
+    <string name="default_lang">GU</string>
+    <string name="grant_permission">પરવાનગી આપો</string>
+    <string name="exit">બહાર નીકળો</string>
+    <string name="grant_a_permission">પરવાનગી આપો</string>
+    <string name="onboard_permission_caption">અમારી એપ્લિકેશનને સંપૂર્ણ રીતે ચલાવવા માટે અમને નીચેના ઉપકરણ પરવાનગીઓ ની જરૂર છે</string>
+    <string name="onboard_permission_location">તમને તમારા વિસ્તારના નિષ્ણાત સાથે પ્રદાન કરવા માટે સ્થાનની પરવાનગીની જરૂર છે</string>
+    <string name="onboard_permission_camera">તમારા પ્રશ્ન માટે ફોટો અને વિડિયો કેપ્ચર કરવા માટે કેમેરાની પરવાનગીની જરૂર છે</string>
+    <string name="onboard_permission_mic">તમારા પ્રશ્ન માટે ઑડિયો રેકોર્ડ કરવા માટે માઇકની પરવાનગીની જરૂર છે</string>
+    <string name="continue_btn">ચાલુ રાખો</string>
+    <string name="permission">પરવાનગી</string>
+    <string name="language">ભાષા</string>
+    <string name="onboard_language_headline">તમારી પસંદગીની ભાષા પસંદ કરો</string>
+    <string name="onboard_language_caption">અમે તમારા વર્તમાન સ્થાનના આધારે $lang ભાષાની ભલામણ કરીએ છીએ</string>
+    <string name="onboard_selection_headline">પાક પસંદ કરો</string>
+    <string name="onboard_selection_caption">પ્રારંભ કરવા માટે ઓછામાં ઓછા 3 પાક અથવા ફળ પસંદ કરો</string>
+    <string name="english">અંગ્રેજી</string>
+    <string name="gujarati">ગુજરાતી</string>
+    <string name="hindi">હિન્દી</string>
+    <string name="selected_language">તમે ગુજરાતી ભાષા પસંદ કરી છે</string>
+    <string name="login_with_mobile">મોબાઈલ નંબર વડે લોગીન કરો</string>
+    <string name="send_otp">OTP મોકલો</string>
+    <string name="use_without_login">લૉગિન વિના ઉપયોગ કરો</string>
+    <string name="mobile">મોબાઇલ નંબર</string>
+    <string name="welcome_note_guest">સ્વાગત છે, તમે અતિથિ લૉગિનનો ઉપયોગ કરી રહ્યાં છો</string>
+    <string name="otp">OTP દાખલ કરો</string>
+    <string name="resent_otp">ફરીથી મોકલો</string>
+    <string name="verify_otp">OTP ચકાસો</string>
+    <string name="submit">submit</string>
+    <string name="change_mobile">મોબાઈલ નંબર બદલો</string>
+    <string name="otp_init">તમારા મોબાઈલ નંબર પર OTP મોકલવામાં આવી રહ્યો છે</string>
+    <string name="title">Title</string>
+    <string name="chat">સંદેશ</string>
+    <string name="expert">નિષ્ણાત</string>
+</resources>

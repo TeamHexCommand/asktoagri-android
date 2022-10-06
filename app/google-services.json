@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "1045504657432",
+    "project_id": "asktoagri",
+    "storage_bucket": "asktoagri.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1045504657432:android:47017563f92236fa40db6d",
+        "android_client_info": {
+          "package_name": "in.hexcommand.asktoagri"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1045504657432-c0cane28odq4tmlbepmfalg3g627fqur.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.hexcommand.asktoagri",
+            "certificate_hash": "bc1133fdc408ce4be51c2ea24d60d87148a670dd"
+          }
+        },
+        {
+          "client_id": "1045504657432-43p4grplelre5iaq159eut3e60a6ijqe.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBGQhBprSKuY5yLRcVgKhFrIp2tN4PABIk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1045504657432-43p4grplelre5iaq159eut3e60a6ijqe.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
