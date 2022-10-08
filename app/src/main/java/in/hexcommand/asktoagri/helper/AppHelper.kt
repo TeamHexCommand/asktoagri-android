@@ -1,7 +1,11 @@
 package `in`.hexcommand.asktoagri.helper
 
 import android.content.Context
-import android.os.Build
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
+import android.net.Uri
+import android.util.Base64.*
+import java.io.ByteArrayOutputStream
 import java.util.*
 
 class AppHelper(private val context: Context) {

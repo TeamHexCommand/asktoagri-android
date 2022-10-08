@@ -2,6 +2,7 @@ package `in`.hexcommand.asktoagri.ui.login
 
 import `in`.hexcommand.asktoagri.MainActivity
 import `in`.hexcommand.asktoagri.R
+import `in`.hexcommand.asktoagri.ui.expert.ExpertActivity
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
 import android.annotation.SuppressLint
 import android.content.Intent
@@ -11,10 +12,13 @@ import android.text.TextWatcher
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.widget.ArrayAdapter
+import android.widget.Spinner
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.FirebaseException
 import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
@@ -27,6 +31,8 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var mSendOtpBtn: MaterialButton
     private lateinit var mGuestLoginBtn: MaterialButton
     private lateinit var mMobileInput: TextInputEditText
+    private lateinit var mRegionInput: TextInputEditText
+    private lateinit var mTitle: MaterialTextView
 
     private lateinit var ls: LocalStorage
 
@@ -36,28 +42,47 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var resendToken: PhoneAuthProvider.ForceResendingToken
     private lateinit var callbacks: PhoneAuthProvider.OnVerificationStateChangedCallbacks
 
+    private var isExpert: Boolean = false
+
+    private lateinit var spinnerDistricts: Spinner
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_login)
 
+        spinnerDistricts = findViewById(R.id.spinnerDistrictsLogin)
         auth = Firebase.auth
 
         mSendOtpBtn = findViewById(R.id.send_otp_btn)
         mGuestLoginBtn = findViewById(R.id.guest_btn)
         mMobileInput = findViewById(R.id.mobile_input)
+        mRegionInput = findViewById(R.id.region_input)
+        mTitle = findViewById(R.id.login_title)
 
         ls = LocalStorage(this)
+
+        val adapterDis = ArrayAdapter.createFromResource(
+            this,
+            R.array.districts_list,
+            android.R.layout.simple_spinner_item
+        )
+        adapterDis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        spinnerDistricts.adapter = adapterDis
+
+        if (intent.hasExtra("user")) {
+            ls.save("user", intent.getStringExtra("user").toString())
+            if (intent.getStringExtra("user") == "farmer") {
+                mTitle.text = "Farmer Login"
+            } else {
+                isExpert = true
+                mTitle.text = "Expert Login"
+            }
+        }
 
         callbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
 
             override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-                // This callback will be invoked in two situations:
-                // 1 - Instant verification. In some cases the phone number can be instantly
-                //     verified without needing to send or enter a verification code.
-                // 2 - Auto-retrieval. On some devices Google Play services can automatically
-                //     detect the incoming verification SMS and perform verification without
-                //     user action.
                 Log.d(TAG, "onVerificationCompleted:$credential")
                 signInWithPhoneAuthCredential(credential)
             }
@@ -104,6 +129,14 @@ class LoginActivity : AppCompatActivity() {
         })
 
         mSendOtpBtn.setOnClickListener {
+
+//            if (mRegionInput.text.isNullOrEmpty()) {
+//                mRegionInput.error = "Enter region"
+//            } else {
+//
+//            }
+
+            ls.save("region",  spinnerDistricts.selectedItem.toString())
             sendOtp("+91${mMobileInput.text}")
         }
 
@@ -208,7 +241,12 @@ class LoginActivity : AppCompatActivity() {
     private fun updateUI(user: FirebaseUser? = auth.currentUser) {
         ls.save("is_login", true)
         ls.save("is_guest_login", false)
-        startActivity(Intent(this, MainActivity::class.java))
+
+        if (isExpert) {
+            startActivity(Intent(this, ExpertActivity::class.java))
+        } else {
+            startActivity(Intent(this, MainActivity::class.java))
+        }
     }
 
     companion object {

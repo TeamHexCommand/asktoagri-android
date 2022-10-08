@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.user.Query.QueryFullActivity">
+
+    <TextView
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="24dp"
+        style="@style/TextAppearance.Material3.TitleLarge"
+        android:id="@+id/queryTitle"
+        android:text="Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <TextView
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"
+        style="@style/TextAppearance.Material3.TitleSmall"
+        android:id="@+id/queryContent"
+        android:text="Title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.chip.ChipGroup
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="24dp"
+        android:id="@+id/chipGroupQueryFull"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+    <com.google.android.material.button.MaterialButton
+        android:enabled="false"
+        android:id="@+id/addSolBtn"
+        android:text="Add Solution"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="24dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+
+
+</LinearLayout>

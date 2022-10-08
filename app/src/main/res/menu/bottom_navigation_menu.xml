@@ -1,0 +1,21 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
+    <item
+        android:id="@+id/pageTrending"
+        android:enabled="true"
+        android:icon="@drawable/round_trending_up_24"
+        android:title="Trending"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/pageAdd"
+        android:enabled="true"
+        android:icon="@drawable/round_add_24"
+        android:title="Add"
+        tools:ignore="HardcodedText" />
+    <item
+        android:id="@+id/pageArticle"
+        android:enabled="true"
+        android:icon="@drawable/round_article_24"
+        android:title="Query"
+        tools:ignore="HardcodedText" />
+</menu>

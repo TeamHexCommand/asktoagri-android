@@ -4,10 +4,10 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ui.expert.ExpertActivity">
 
     <RelativeLayout
-        android:id="@+id/markApp"
+        android:id="@+id/markAppExpert"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
@@ -49,7 +49,7 @@
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/openChat"
+            android:id="@+id/redeem"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -80,16 +80,27 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginStart="8dp"
-                    android:text="@string/expert"
+                    android:text="Farmer"
                     android:textColor="@color/black" />
             </LinearLayout>
 
         </com.google.android.material.card.MaterialCardView>
     </RelativeLayout>
 
+    <TextView
+        android:visibility="gone"
+        android:id="@+id/expert_region"
+        style="@style/TextAppearance.Material3.TitleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/markAppExpert"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="2dp"
+        android:text="City Region" />
+
     <androidx.recyclerview.widget.RecyclerView
-        android:layout_below="@+id/markApp"
-        android:id="@+id/trending_article_main"
+        android:layout_below="@+id/expert_region"
+        android:id="@+id/expertQueryList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
@@ -99,7 +110,9 @@
         android:clipToPadding="false"
         tools:targetApi="m" />
 
+
     <com.google.android.material.card.MaterialCardView
+        android:visibility="gone"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -115,7 +128,7 @@
             android:layout_marginTop="0dp"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            app:menu="@menu/bottom_navigation_menu" />
+            app:menu="@menu/bottom_navigation_menu_expert" />
     </com.google.android.material.card.MaterialCardView>
 
 </RelativeLayout>

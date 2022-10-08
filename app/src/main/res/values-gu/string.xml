@@ -33,4 +33,8 @@
     <string name="title">Title</string>
     <string name="chat">સંદેશ</string>
     <string name="expert">નિષ્ણાત</string>
+    <string name="caption">eque porro quisquam est qui dolorem</string>
+    <string name="tags">#tag1 #tag2 #tag3</string>
+    <string name="apiUrl">https://asktoagri.planckstudio.in/api/v1/</string>
+    <string name="btn_camera">ફોટો લેવા માટે અહીં ક્લિક કરો</string>
 </resources>

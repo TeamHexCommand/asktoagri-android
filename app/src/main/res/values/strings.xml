@@ -40,4 +40,62 @@
     <string name="title">Title</string>
     <string name="chat">Chat</string>
     <string name="expert">Expert</string>
+    <string name="caption">eque porro quisquam est qui dolorem</string>
+    <string name="tags">#tag1 #tag2 #tag3</string>
+    <string name="apiUrl">https://asktoagri.planckstudio.in/api/v1/</string>
+    <string name="btn_camera">Click here to capture a photo</string>
+
+    <string-array name="category_list">
+        <item>Soil Problem</item>
+        <item>Krishi Yojana</item>
+        <item>Bancking</item>
+        <item>Technology</item>
+        <item>Other</item>
+        <item>Crops</item>
+        <item>Fruit</item>
+    </string-array>
+
+    <string-array name="crops_list">
+        <item>cotton</item>
+        <item>tomato</item>
+        <item>wheat</item>
+        <item>potato</item>
+    </string-array>
+
+    <string-array name="districts_list">
+        <item>Ahmedabad</item>
+        <item>Amreli</item>
+        <item>Anand</item>
+        <item>Aravalli</item>
+        <item>Banaskantha (Palanpur)</item>
+        <item>Bharuch</item>
+        <item>Bhavnagar</item>
+        <item>Botad</item>
+        <item>Chhota Udepur</item>
+        <item>Dahod</item>
+        <item>Dangs (Ahwa)</item>
+        <item>Devbhoomi Dwarka</item>
+        <item>Gandhinagar</item>
+        <item>Gir Somnath</item>
+        <item>Jamnagar</item>
+        <item>Junagadh</item>
+        <item>Kachchh</item>
+        <item>Kheda (Nadiad)</item>
+        <item>Mahisagar</item>
+        <item>Mehsana</item>
+        <item>Morbi</item>
+        <item>Narmada (Rajpipla)</item>
+        <item>Navsari</item>
+        <item>Narmada (Rajpipla)</item>
+        <item>Patan</item>
+        <item>Porbandar</item>
+        <item>Rajkot</item>
+        <item>Sabarkantha (Himmatnagar</item>
+        <item>Surendranagar</item>
+        <item>Tapi (Vyara)</item>
+        <item>Vadodara</item>
+        <item>Valsad</item>
+
+    </string-array>
+
 </resources>

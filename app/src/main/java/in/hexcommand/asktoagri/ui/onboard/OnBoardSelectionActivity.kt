@@ -2,6 +2,7 @@ package `in`.hexcommand.asktoagri.ui.onboard
 
 import `in`.hexcommand.asktoagri.R
 import `in`.hexcommand.asktoagri.ui.login.LoginActivity
+import `in`.hexcommand.asktoagri.ui.login.LoginSelectionActivity
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -27,6 +28,7 @@ class OnBoardSelectionActivity : AppCompatActivity() {
     private var mSelectionAdapter = SelectionAdapter(this, mSelectionList, this)
     private lateinit var mSelectionModel: SelectionModel
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_on_board_selection)
@@ -36,7 +38,7 @@ class OnBoardSelectionActivity : AppCompatActivity() {
         mSelectionItems = findViewById(R.id.selection_items)
 
         mPrimaryBtn.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
+            startActivity(Intent(this, LoginSelectionActivity::class.java))
         }
 
         mSecondaryBtn.setOnClickListener {

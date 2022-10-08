@@ -1,0 +1,23 @@
+[
+  {
+    "id": 0,
+    "title": "title",
+    "caption": "This is caption of article",
+    "tags": "tag1,tag2",
+    "image": "https://img.freepik.com/premium-photo/fresh-ripe-oranges-dark-background_87742-24567.jpg?w=360"
+  },
+  {
+    "id": 1,
+    "title": "title",
+    "caption": "This is caption of article",
+    "tags": "tag1,tag2",
+    "image": "https://img.freepik.com/premium-photo/fresh-ripe-oranges-dark-background_87742-24567.jpg?w=360"
+  },
+  {
+    "id": 2,
+    "title": "title",
+    "caption": "This is caption of article",
+    "tags": "tag1,tag2",
+    "image": "https://img.freepik.com/premium-photo/fresh-ripe-oranges-dark-background_87742-24567.jpg?w=360"
+  }
+]
