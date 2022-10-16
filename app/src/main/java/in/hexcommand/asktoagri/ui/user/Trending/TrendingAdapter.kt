@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.google.android.material.card.MaterialCardView
 import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import com.google.android.material.textview.MaterialTextView
@@ -22,7 +24,7 @@ class TrendingAdapter(
     @DelicateCoroutinesApi
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-        //        private val card: CardView = view.findViewById(R.id.trending_card)
+        val card: MaterialCardView = view.findViewById(R.id.trending_card)
         val trendingImage: ImageView = view.findViewById(R.id.article_image)
         val trendingTitle: MaterialTextView = view.findViewById(R.id.article_title)
         val trendingCaption: MaterialTextView = view.findViewById(R.id.article_caption)
@@ -30,15 +32,9 @@ class TrendingAdapter(
 
         fun initialize(item: TrendingModel, action: TrendingActivity) {
 
-//            trendingCard {
-//                alpha = 0f
-//                visibility = View.VISIBLE
-//                animate().alpha(1f).setDuration(1000).setListener(null)
-//            }
-
-//            trendingCard.setOnClickListener {
-//                action.onItemClick(it as MaterialCardView, item, adapterPosition)
-//            }
+            card.setOnClickListener {
+                action.onItemClick(it as MaterialCardView, item, adapterPosition)
+            }
         }
 
         init {
@@ -57,10 +53,10 @@ class TrendingAdapter(
 
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
 
-//        Glide.with(viewHolder.trendingImage.context)
-//            .load(dataSet[position].getImage())
-//            .placeholder(R.drawable.ic_launcher_foreground)
-//            .into(viewHolder.trendingImage)
+        Glide.with(viewHolder.trendingImage.context)
+            .load(dataSet[position].getImage())
+            .placeholder(R.drawable.ic_launcher_foreground)
+            .into(viewHolder.trendingImage)
 
         viewHolder.trendingTitle.text = dataSet[position].getTitle()
         viewHolder.trendingCaption.text = dataSet[position].getCaption()

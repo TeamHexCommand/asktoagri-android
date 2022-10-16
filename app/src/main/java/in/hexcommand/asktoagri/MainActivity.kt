@@ -1,6 +1,7 @@
 package `in`.hexcommand.asktoagri
 
 import `in`.hexcommand.asktoagri.adapter.TrendingAdapter
+import `in`.hexcommand.asktoagri.helper.AppHelper
 import `in`.hexcommand.asktoagri.helper.WebViewHelper
 import `in`.hexcommand.asktoagri.ui.user.Query.AddQueryActivity
 import `in`.hexcommand.asktoagri.ui.user.Query.UserQueryActivity
@@ -43,6 +44,8 @@ class MainActivity : AppCompatActivity() {
         bottomBar = findViewById(R.id.mainBottomNav)
 
         renderTrendingItems()
+
+        AppHelper(this).storeTrendingArtical()
 
         mChat.setOnClickListener {
             startActivity(
@@ -98,8 +101,8 @@ class MainActivity : AppCompatActivity() {
 //        val apiKey = Keys.apiKey()
 //        Log.e("KEY", apiKey)
 
-    }
 
+    }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun renderTrendingItems() {
@@ -136,7 +139,8 @@ class MainActivity : AppCompatActivity() {
                 item.getString("title"),
                 item.getString("caption"),
                 item.getString("tags"),
-                item.getString("image")
+                item.getString("image"),
+                ""
             )
             mTrendingList.add(selectionModel)
         }

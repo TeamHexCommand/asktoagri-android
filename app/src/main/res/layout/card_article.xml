@@ -1,31 +1,29 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:background="#fefefe">
 
-    android:background="#fefefe"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <androidx.cardview.widget.CardView
-        android:clickable="true"
-        android:focusable="true"
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/trending_card"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="8dp"
-        app:cardElevation="0dp"
-        android:id="@+id/trending_card"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
-        <LinearLayout
-            android:orientation="horizontal"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+        android:clickable="true"
+        android:focusable="true"
+        app:cardElevation="0dp">
 
-            <ImageView
-                android:id="@+id/article_image"
-                android:layout_width="128dp"
-                android:layout_height="128dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/thumb_orange" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <include
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                layout="@layout/holder_artical_image" />
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -33,51 +31,52 @@
                 android:orientation="vertical">
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/article_title"
-                    style="@style/TextAppearance.Material3.TitleLarge"
+                    android:id="@+id/article_caption"
+                    style="@style/TextAppearance.Material3.BodySmall"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
+                    android:layout_marginStart="16dp"
                     android:layout_marginTop="8dp"
                     android:text="@string/title" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/article_caption"
-                    style="@style/TextAppearance.Material3.TitleSmall"
+                    android:id="@+id/article_title"
+                    style="@style/TextAppearance.Material3.TitleMedium"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="2dp"
-                    android:layout_marginEnd="24dp"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="16dp"
                     android:text="@string/caption" />
 
                 <com.google.android.material.chip.ChipGroup
-                    android:layout_marginTop="8dp"
-                    android:layout_marginStart="24dp"
                     android:id="@+id/chipGroupTags"
                     android:layout_width="wrap_content"
-                    android:layout_height="wrap_content">
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginBottom="8dp">
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                        android:text="#tag1"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="42dp"/>-->
+                    <!--                    <com.google.android.material.chip.Chip-->
+                    <!--                        android:text="#tag1"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="42dp"/>-->
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                        android:text="#tag2"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="42dp"/>-->
+                    <!--                    <com.google.android.material.chip.Chip-->
+                    <!--                        android:text="#tag2"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="42dp"/>-->
 
-<!--                    <com.google.android.material.chip.Chip-->
-<!--                        android:text="#tag3"-->
-<!--                        android:layout_width="wrap_content"-->
-<!--                        android:layout_height="42dp"/>-->
+                    <!--                    <com.google.android.material.chip.Chip-->
+                    <!--                        android:text="#tag3"-->
+                    <!--                        android:layout_width="wrap_content"-->
+                    <!--                        android:layout_height="42dp"/>-->
 
                 </com.google.android.material.chip.ChipGroup>
 
             </LinearLayout>
 
         </LinearLayout>
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 
 </LinearLayout>

@@ -1,7 +1,5 @@
 package `in`.hexcommand.asktoagri.ui.onboard
 
-import com.google.gson.JsonObject
-
 class SelectionModel {
     private var id: Int = 0
     private var category: String = ""
@@ -42,7 +40,7 @@ class SelectionModel {
     }
 
     fun setTitle(title: String) {
-        this.title
+        this.title = title
     }
 
     fun getTitle(): String {

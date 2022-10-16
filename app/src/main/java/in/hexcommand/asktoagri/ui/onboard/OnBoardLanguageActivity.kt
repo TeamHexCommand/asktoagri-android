@@ -21,7 +21,6 @@ import com.google.android.material.chip.Chip
 import com.google.android.material.chip.ChipGroup
 import java.util.*
 
-
 class OnBoardLanguageActivity : AppCompatActivity() {
 
     private lateinit var mPrimaryBtn: MaterialButton
@@ -122,7 +121,7 @@ class OnBoardLanguageActivity : AppCompatActivity() {
         context.resources.updateConfiguration(config, context.resources.displayMetrics)
     }
 
-    public fun getLastKnownLocation(context: Context) {
+    private fun getLastKnownLocation(context: Context) {
         val locationManager: LocationManager =
             context.getSystemService(Context.LOCATION_SERVICE) as LocationManager
         val providers: List<String> = locationManager.getProviders(true)
@@ -148,14 +147,19 @@ class OnBoardLanguageActivity : AppCompatActivity() {
             gps[0] = location.latitude
             gps[1] = location.longitude
 
+            Log.e("Lang", location.latitude.toString())
+            Log.e("Lang", location.longitude.toString())
+
             val geocoder = Geocoder(this, Locale.getDefault())
             val addresses: List<Address>? =
-                geocoder.getFromLocation(location.latitude, location.longitude, 5)
+                geocoder.getFromLocation(location.latitude, location.longitude, 1)
 
-            Log.e("LOC", gps[0].toString())
-            Log.e("LOC", gps[1].toString())
-            Log.e("LOC", addresses!![1].locale.toString())
+            ls.save("latitude", location.latitude.toString())
+            ls.save("longitude", location.longitude.toString())
+        } else {
+            ls.save("latitude", "0")
+            ls.save("longitude", "0")
+            Log.e("Lang", "Unknown location")
         }
-
     }
 }

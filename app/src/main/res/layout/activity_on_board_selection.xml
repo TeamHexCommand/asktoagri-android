@@ -34,7 +34,6 @@
             android:layout_gravity="center"
             android:layout_marginTop="24dp"
             android:paddingBottom="128dp"
-            android:foreground="@drawable/bottom_gradient"
             android:clipToPadding="false"
             tools:targetApi="m" />
 

@@ -1,8 +1,12 @@
 package `in`.hexcommand.asktoagri.ui.onboard
 
 import `in`.hexcommand.asktoagri.R
-import `in`.hexcommand.asktoagri.ui.login.LoginActivity
+import `in`.hexcommand.asktoagri.helper.ApiHelper
+import `in`.hexcommand.asktoagri.helper.AppHelper
+import `in`.hexcommand.asktoagri.model.Crops
+import `in`.hexcommand.asktoagri.model.Upload
 import `in`.hexcommand.asktoagri.ui.login.LoginSelectionActivity
+import `in`.hexcommand.asktoagri.util.shared.LocalStorage
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
@@ -12,8 +16,11 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
-import kotlinx.coroutines.DelicateCoroutinesApi
+import com.google.gson.Gson
+import kotlinx.coroutines.*
 import org.json.JSONArray
+import org.json.JSONException
+import org.json.JSONObject
 
 
 @DelicateCoroutinesApi
@@ -28,7 +35,6 @@ class OnBoardSelectionActivity : AppCompatActivity() {
     private var mSelectionAdapter = SelectionAdapter(this, mSelectionList, this)
     private lateinit var mSelectionModel: SelectionModel
 
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_on_board_selection)
@@ -38,7 +44,7 @@ class OnBoardSelectionActivity : AppCompatActivity() {
         mSelectionItems = findViewById(R.id.selection_items)
 
         mPrimaryBtn.setOnClickListener {
-            startActivity(Intent(this, LoginSelectionActivity::class.java))
+            updateSelection()
         }
 
         mSecondaryBtn.setOnClickListener {
@@ -48,26 +54,38 @@ class OnBoardSelectionActivity : AppCompatActivity() {
         renderSelectionItems()
     }
 
+    private fun updateSelection() {
+
+        var selectedItem = JSONArray()
+
+        (0 until mSelectionList.size).forEach { i ->
+            if (mSelectionList[i].getSelected()) {
+                selectedItem.put(mSelectionList[i].getTitle())
+            }
+        }
+
+        LocalStorage(this).save("selected_crops", selectedItem.toString())
+
+        startActivity(Intent(this, LoginSelectionActivity::class.java))
+    }
+
     @SuppressLint("NotifyDataSetChanged")
     private fun renderSelectionItems() {
 
-        val mLayoutManager =
-            GridLayoutManager(
-                applicationContext,
-                3,
-                GridLayoutManager.VERTICAL,
-                false
-            )
+        val mLayoutManager = GridLayoutManager(
+            applicationContext, 3, GridLayoutManager.VERTICAL, false
+        )
 
         mLayoutManager.isUsingSpansToEstimateScrollbarDimensions = false
         this.mSelectionItems.layoutManager = mLayoutManager
 
         this.mSelectionItems.adapter = this.mSelectionAdapter
-        mSelectionList.clear()
-        mSelectionAdapter.notifyDataSetChanged()
+//        mSelectionList.clear()
+//        mSelectionAdapter.notifyDataSetChanged()
 
-        demoData()
+//        demoData()
 
+        liveData()
 //        repeat((0 until 10).count()) {
 //            mSelectionList.add(
 //                SelectionModel(
@@ -82,9 +100,54 @@ class OnBoardSelectionActivity : AppCompatActivity() {
 //        }
     }
 
-    private fun demoData() {
+    private fun liveData() {
 
-        val text = resources.openRawResource(R.raw.selection_items).bufferedReader().use { it.readText() }
+        GlobalScope.launch(Dispatchers.IO) {
+            val res =
+                JSONObject(async { ApiHelper(this@OnBoardSelectionActivity).getAllCrops() }.await()).getJSONObject(
+                    "result"
+                ).getJSONArray("data")
+
+            try {
+
+                (0 until res.length()).forEach { i ->
+
+                    val cropsModel = Gson().fromJson(
+                        res.getJSONObject(i).toString(), Crops::class.java
+                    )
+
+                    val img = JSONObject(async {
+                        ApiHelper(this@OnBoardSelectionActivity).getUploadById(
+                            Upload(id = cropsModel.image)
+                        )
+                    }.await()).getJSONObject("result").getJSONArray("data").getJSONObject(0)
+
+                    val image =
+                        "${AppHelper(this@OnBoardSelectionActivity).getConfigUrl("uploads")}${
+                            img.getString("name")
+                        }.${img.getString("type")}"
+
+                    Log.e("OnBoard", image.toString())
+
+                    val selectionModel = SelectionModel(
+                        cropsModel.id, cropsModel.type, cropsModel.name, image, false
+                    )
+                    mSelectionList.add(selectionModel)
+
+                    runOnUiThread {
+                        mSelectionAdapter.notifyDataSetChanged()
+                    }
+                }
+            } catch (e: JSONException) {
+                Log.e("OnBoard", "Error")
+            }
+        }
+
+    }
+
+    private fun demoData() {
+        val text =
+            resources.openRawResource(R.raw.selection_items).bufferedReader().use { it.readText() }
         val selectionItems = JSONArray(text)
 
         (0 until selectionItems.length()).forEach { i ->
@@ -105,11 +168,9 @@ class OnBoardSelectionActivity : AppCompatActivity() {
     }
 
     fun onItemClick(
-        card: MaterialCardView,
-        item: SelectionModel,
-        adapterPosition: Int
+        card: MaterialCardView, item: SelectionModel, adapterPosition: Int
     ) {
-
+        mSelectionList[adapterPosition].setSelected(!card.isChecked)
         card.isChecked = !card.isChecked
     }
 }

@@ -2,14 +2,15 @@ package `in`.hexcommand.asktoagri.ui.onboard
 
 import `in`.hexcommand.asktoagri.R
 import android.content.Context
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.google.android.material.card.MaterialCardView
-import com.google.android.material.textview.MaterialTextView
 import kotlinx.coroutines.DelicateCoroutinesApi
 
 @DelicateCoroutinesApi
@@ -23,10 +24,9 @@ class SelectionAdapter(
     @DelicateCoroutinesApi
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
 
-
         val selectionCard: MaterialCardView = view.findViewById(R.id.selection_card)
         val selectionImage: ImageView = view.findViewById(R.id.selection_image)
-        val selectionTitle: MaterialTextView = view.findViewById(R.id.selection_title)
+        val selectionTitle: TextView = view.findViewById(R.id.selection_title)
 
         fun initialize(item: SelectionModel, action: OnBoardSelectionActivity) {
 
@@ -62,8 +62,9 @@ class SelectionAdapter(
             .placeholder(R.drawable.ic_launcher_foreground)
             .into(viewHolder.selectionImage)
 
-        viewHolder.selectionTitle.text = dataSet[position].getTitle()
 
+        viewHolder.selectionTitle.visibility = View.VISIBLE
+        viewHolder.selectionTitle.text = dataSet[position].getTitle().capitalize()
         viewHolder.initialize(dataSet[position], clickListner)
     }
 

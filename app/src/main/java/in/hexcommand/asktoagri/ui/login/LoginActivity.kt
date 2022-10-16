@@ -1,7 +1,13 @@
 package `in`.hexcommand.asktoagri.ui.login
 
+//import `in`.hexcommand.asktoagri.model.AddressModel
 import `in`.hexcommand.asktoagri.MainActivity
 import `in`.hexcommand.asktoagri.R
+import `in`.hexcommand.asktoagri.data.ConfigData
+import `in`.hexcommand.asktoagri.helper.ApiHelper
+import `in`.hexcommand.asktoagri.helper.AppHelper
+import `in`.hexcommand.asktoagri.model.AddressModel
+import `in`.hexcommand.asktoagri.model.User
 import `in`.hexcommand.asktoagri.ui.expert.ExpertActivity
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
 import android.annotation.SuppressLint
@@ -24,6 +30,13 @@ import com.google.firebase.FirebaseTooManyRequestsException
 import com.google.firebase.auth.*
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.ktx.Firebase
+import com.google.gson.Gson
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
+import kotlinx.coroutines.launch
+import org.json.JSONArray
+import org.json.JSONObject
 import java.util.concurrent.TimeUnit
 
 class LoginActivity : AppCompatActivity() {
@@ -35,6 +48,7 @@ class LoginActivity : AppCompatActivity() {
     private lateinit var mTitle: MaterialTextView
 
     private lateinit var ls: LocalStorage
+    private lateinit var ah: AppHelper
 
     private lateinit var auth: FirebaseAuth
 
@@ -61,6 +75,21 @@ class LoginActivity : AppCompatActivity() {
         mTitle = findViewById(R.id.login_title)
 
         ls = LocalStorage(this)
+        ah = AppHelper(this)
+
+        try {
+            val addressModel: AddressModel = ah.getLocationFromCode(
+                ls.getValueString("latitude").toDouble(),
+                ls.getValueString("longitude").toDouble()
+            )
+
+            Log.e(
+                "Login",
+                "${addressModel.getPincode()} village: ${addressModel.getVillage()} Dis=${addressModel.getDistrict()} City: ${addressModel.getCity()}"
+            )
+        } catch (e: NumberFormatException) {
+            Log.e(TAG, "Failed to get location")
+        }
 
         val adapterDis = ArrayAdapter.createFromResource(
             this,
@@ -136,14 +165,19 @@ class LoginActivity : AppCompatActivity() {
 //
 //            }
 
-            ls.save("region",  spinnerDistricts.selectedItem.toString())
+            ls.save("region", spinnerDistricts.selectedItem.toString())
             sendOtp("+91${mMobileInput.text}")
         }
 
         mGuestLoginBtn.setOnClickListener {
             ls.save("is_login", true)
             ls.save("is_guest_login", true)
-            startActivity(Intent(this, MainActivity::class.java))
+            startActivity(
+                Intent(
+                    this,
+                    MainActivity::class.java
+                ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+            )
         }
     }
 
@@ -240,12 +274,124 @@ class LoginActivity : AppCompatActivity() {
 
     private fun updateUI(user: FirebaseUser? = auth.currentUser) {
         ls.save("is_login", true)
+        ls.save("show_onboard", false)
         ls.save("is_guest_login", false)
 
-        if (isExpert) {
-            startActivity(Intent(this, ExpertActivity::class.java))
-        } else {
-            startActivity(Intent(this, MainActivity::class.java))
+        val u = User(
+            firebaseID = user?.uid.toString(),
+            defaultFcm = ls.getValueString("userFcm"),
+            mobile = user?.phoneNumber.toString().replace("+91", ""),
+            longitude = ls.getValueString("longitude"),
+            latitude = ls.getValueString("latitude")
+        )
+
+        GlobalScope.launch(Dispatchers.IO) {
+
+            val checkUser = async { ApiHelper(this@LoginActivity).checkUser(u) }.await()
+            val userData = JSONObject(checkUser)
+
+            when {
+                userData.getInt("code") == 400 -> {
+                    ls.save("is_new_user", true)
+                    val res = async { ApiHelper(this@LoginActivity).addUser(u) }.await()
+                    val data = JSONObject(res)
+
+                    if (data.getInt("code") == 200) {
+                        Log.e(TAG, data.getJSONObject("result").getJSONObject("data").toString())
+                        ls.save(
+                            "current_user",
+                            data.getJSONObject("result").getJSONObject("data").toString()
+                        )
+                    } else {
+                        Log.e("LoginActivity", "LoginFailed")
+                    }
+                }
+                else -> {
+                    ls.save("is_new_user", false)
+                    Log.e(
+                        TAG, userData.getJSONObject("result").getJSONArray("data").getJSONObject(0)
+                            .toString()
+                    )
+                    ls.save(
+                        "current_user",
+                        userData.getJSONObject("result").getJSONArray("data").getJSONObject(0)
+                            .toString()
+                    )
+                }
+            }
+
+            finishLogin()
+        }
+    }
+
+    private fun finishLogin() {
+
+        try {
+            val userModel = Gson().fromJson(
+                ls.getValueString("current_user"),
+                User::class.java
+            )
+
+            ls.save("user_id", userModel.id)
+            ls.save("user_mobile", userModel.mobile)
+
+            if (ls.getValueBoolean("is_new_user")) {
+                val selectedCrops = JSONArray(ls.getValueString("selected_crops"))
+
+                (0 until selectedCrops.length()).forEach { i ->
+                    GlobalScope.launch(Dispatchers.IO) {
+                        async {
+                            ApiHelper(this@LoginActivity).addConfig(
+                                ConfigData(
+                                    user = userModel.id,
+                                    name = "selectedCrops",
+                                    value = selectedCrops.getString(i)
+                                )
+                            )
+                        }
+                    }
+                }
+
+            }
+
+            if (userModel.isBanned == 1) {
+                Toast.makeText(
+                    this@LoginActivity,
+                    getString(R.string.msg_ban),
+                    Toast.LENGTH_SHORT
+                ).show()
+                ah.logoutUser()
+                startActivity(
+                    Intent(this@LoginActivity, LoginSelectionActivity::class.java).setFlags(
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    )
+                )
+            } else {
+                if (userModel.isExpert == 1) {
+                    ls.save("user", "expert")
+                    startActivity(
+                        Intent(
+                            this@LoginActivity,
+                            ExpertActivity::class.java
+                        ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    )
+                } else {
+                    ls.save("user", "farmer")
+                    startActivity(
+                        Intent(
+                            this@LoginActivity,
+                            MainActivity::class.java
+                        ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                    )
+                }
+            }
+        } catch (e: NullPointerException) {
+            ah.logoutUser()
+            startActivity(
+                Intent(this@LoginActivity, LoginSelectionActivity::class.java).setFlags(
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                )
+            )
         }
     }
 

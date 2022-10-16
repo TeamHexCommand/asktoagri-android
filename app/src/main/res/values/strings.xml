@@ -4,9 +4,10 @@
     <string name="app_code" translatable="false">1</string>
     <string name="app_developer" translatable="false">HexCommand</string>
     <string name="base_url" translatable="false">aHR0cHM6Ly9hc2t0b2FncmkucGxhbmNrc3R1ZGlvLmlu</string>
-    <string name="api_url" translatable="false">aHR0cHM6Ly9hc2t0b2FncmkucGxhbmNrc3R1ZGlvLmluL2FwaS92MS8</string>
+    <string name="api_url" translatable="false">aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9ZZ29oZWwxOC81MWFmMzg2MTc3OTU5YzJlYTRjMzc3YmVhY2E2MTU2ZC9yYXc</string>
     <string name="api_key" translatable="false">dGhpc19pc19mYWNrX2FwaV9rZXk</string>
     <string name="support_email" translatable="false">c3VwcG9ydEBoZXhjb21tYW5kLmlu</string>
+    <string name="config_url" translatable="false">aHR0cHM6Ly9naXN0LmdpdGh1YnVzZXJjb250ZW50LmNvbS9ZZ29oZWwxOC81MWFmMzg2MTc3OTU5YzJlYTRjMzc3YmVhY2E2MTU2ZC9yYXc</string>
     <string name="default_lang">EN</string>
     <string name="grant_permission">Grant Permission</string>
     <string name="exit">Exit</string>
@@ -42,8 +43,9 @@
     <string name="expert">Expert</string>
     <string name="caption">eque porro quisquam est qui dolorem</string>
     <string name="tags">#tag1 #tag2 #tag3</string>
-    <string name="apiUrl">https://asktoagri.planckstudio.in/api/v1/</string>
+    <string name="apiUrl" translatable="false">https://asktoagri.planckstudio.in/api/v1/</string>
     <string name="btn_camera">Click here to capture a photo</string>
+    <string name="msg_ban">Your account is restricated</string>
 
     <string-array name="category_list">
         <item>Soil Problem</item>

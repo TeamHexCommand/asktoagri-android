@@ -5,6 +5,7 @@ class TrendingModel {
     private var title: String = ""
     private var image: String = ""
     private var caption: String = ""
+    private var url: String = ""
     private var tags: String = ""
 
     constructor()
@@ -14,13 +15,15 @@ class TrendingModel {
         title: String,
         caption: String,
         tags: String,
-        image: String
+        image: String,
+        url : String
     ) {
         this.setId(id)
         this.setTitle(title)
         this.setCaption(caption)
         this.setTags(tags)
         this.setImage(image)
+        this.setUrl(url)
     }
 
     fun setId(id: Int) {
@@ -37,6 +40,14 @@ class TrendingModel {
 
     fun getTitle(): String {
         return this.title
+    }
+
+    fun setUrl(url: String) {
+        this.url = url
+    }
+
+    fun getUrl(): String {
+        return this.url
     }
 
     fun setImage(image: String) {

@@ -34,15 +34,20 @@
                 tools:ignore="ContentDescription"
                 tools:targetApi="m" />
 
-            <com.google.android.material.textview.MaterialTextView
+            <TextView
                 android:id="@+id/selection_title"
-                style="@style/TextAppearance.Material3.TitleLarge"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:paddingBottom="16dp"
+                style="@style/TextAppearance.Material3.TitleMedium"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center" />
+                android:layout_above="@+id/selection_image"
+                android:layout_alignBottom="@id/selection_image"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:paddingBottom="8dp"
+                android:text="Crops"
+                android:textColor="@color/white"
+                tools:ignore="HardcodedText" />
         </RelativeLayout>
     </com.google.android.material.card.MaterialCardView>
 
