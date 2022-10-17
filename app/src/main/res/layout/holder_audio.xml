@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal">
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/audio_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentStart="true"
+        android:elevation="0dp"
+        android:padding="16dp"
+        app:cardBackgroundColor="@color/primaryColor"
+        app:cardCornerRadius="0dp"
+        app:strokeWidth="0dp">
+
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/round_audiotrack_24"
+            app:tint="@color/white" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+    <com.google.android.material.progressindicator.LinearProgressIndicator
+        android:id="@+id/audio_progress"
+        android:progress="0"
+        android:layout_marginStart="16dp"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/audio_icon"
+        android:layout_toLeftOf="@+id/audio_action"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content" />
+
+    <com.google.android.material.card.MaterialCardView
+        android:id="@+id/audio_action"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_gravity="end"
+        android:elevation="0dp"
+        android:padding="16dp"
+        app:cardCornerRadius="0dp"
+        app:strokeWidth="0dp">
+
+        <ImageView
+            android:id="@+id/audio_action_icon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/round_play_arrow_black_24" />
+
+    </com.google.android.material.card.MaterialCardView>
+
+</RelativeLayout>

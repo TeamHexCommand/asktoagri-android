@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#fefefe"
     tools:context=".MainActivity">
 
     <RelativeLayout
@@ -87,17 +88,105 @@
         </com.google.android.material.card.MaterialCardView>
     </RelativeLayout>
 
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/trending_article_main"
+    <ScrollView
+
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/markApp"
-        android:layout_gravity="center"
-        android:layout_marginStart="24dp"
-        android:layout_marginTop="24dp"
-        android:layout_marginEnd="24dp"
-        android:clipToPadding="false"
-        tools:targetApi="m" />
+        android:layout_below="@+id/markApp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#fefefe"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_marginEnd="24dp"
+                android:layout_marginStart="24dp"
+                android:orientation="vertical"
+                android:id="@+id/mainCustomView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            </LinearLayout>
+
+            <in.hexcommand.asktoagri.ui.view.QueryCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                app:caption="Common"
+                app:file_url="https://sklktecdnems02.cdnsrv.jio.com/jiosaavn.cdn.jio.com/799/c7fcdb5d33731d6d044462b7e29970c9_96.mp4"
+                app:query_id="0"
+                app:title="@string/caption"
+                app:type="audio" />
+
+            <in.hexcommand.asktoagri.ui.view.QueryCardView
+                android:id="@+id/custom_query_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                app:caption="Common"
+                app:file_url="https://"
+                app:query_id="0"
+                app:title="@string/caption"
+                app:type="image" />
+
+            <in.hexcommand.asktoagri.ui.view.QueryCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                app:caption="Common"
+                app:file_url="https://"
+                app:query_id="0"
+                app:title="@string/caption"
+                app:type="video" />
+
+            <in.hexcommand.asktoagri.ui.view.QueryCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                app:caption="Common"
+                app:file_url="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3"
+                app:query_id="0"
+                app:title="@string/caption"
+                app:type="audio" />
+
+            <in.hexcommand.asktoagri.ui.view.QueryCardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                app:caption="Common"
+                app:file_url="https://"
+                app:query_id="0"
+                app:title="@string/caption"
+                app:type="text" />
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/trending_article_main"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/custom_query_card"
+                android:layout_gravity="center"
+                android:layout_marginStart="24dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="24dp"
+                android:clipToPadding="false"
+                tools:targetApi="m" />
+
+        </LinearLayout>
+
+    </ScrollView>
+
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/mainBottomNav"
