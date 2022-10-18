@@ -7,7 +7,7 @@
     android:layout_height="wrap_content">
 
     <VideoView
-        app:layout_constraintDimensionRatio="1:1"
+        app:layout_constraintDimensionRatio="16:9"
         app:layout_constraintTop_toTopOf="parent"
         android:id="@+id/addQueryVideoView"
         android:layout_width="match_parent"

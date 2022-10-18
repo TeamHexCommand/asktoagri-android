@@ -2,10 +2,9 @@ package `in`.hexcommand.asktoagri.data
 
 import com.google.gson.annotations.SerializedName
 
-data class ConfigData(
+data class DistrictData(
     @SerializedName("id") var id: Int = 0,
-    @SerializedName("user") var user: Int = 0,
     @SerializedName("name") var name: String = "",
-    @SerializedName("value") var value: String = "",
-    @SerializedName("acreatedAt") var createdAt: String = ""
+    @SerializedName("state") var state: Int = 0,
+    @SerializedName("stateName") var stateName: String = ""
 )

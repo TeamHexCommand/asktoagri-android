@@ -2,6 +2,10 @@ package `in`.hexcommand.asktoagri.ui.user.Query
 
 import `in`.hexcommand.asktoagri.MainActivity
 import `in`.hexcommand.asktoagri.R
+import `in`.hexcommand.asktoagri.data.CategoryData
+import `in`.hexcommand.asktoagri.data.DistrictData
+import `in`.hexcommand.asktoagri.helper.ApiHelper
+import `in`.hexcommand.asktoagri.model.Crops
 import `in`.hexcommand.asktoagri.ui.view.AudioView
 import `in`.hexcommand.asktoagri.ui.view.CustomAudioView
 import `in`.hexcommand.asktoagri.ui.view.CustomImageView
@@ -35,7 +39,10 @@ import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.firebase.auth.FirebaseAuth
+import com.google.gson.Gson
+import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import org.json.JSONException
 import org.json.JSONObject
@@ -80,6 +87,10 @@ class AddQueryActivity : AppCompatActivity() {
 
     private lateinit var filePreview: MaterialCardView
 
+    private lateinit var mCategoryTextField: AutoCompleteTextView
+    private lateinit var mCropsTextField: AutoCompleteTextView
+    private lateinit var mDistrictTextField: AutoCompleteTextView
+
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -99,6 +110,11 @@ class AddQueryActivity : AppCompatActivity() {
         mAudioProgress = findViewById(R.id.audio_progress)
         mAudioActionBtn = findViewById(R.id.audio_action)
         mAudioActionIcon = findViewById(R.id.audio_action_icon)
+
+        mCategoryTextField = findViewById(R.id.addQueryCategoryMenuText)
+        mCropsTextField = findViewById(R.id.addQueryCropsMenuText)
+        mDistrictTextField = findViewById(R.id.addQueryDistrictMenuText)
+        mDistrictTextField = findViewById(R.id.addQueryDistrictMenuText)
 
         audioView = findViewById(R.id.audioView)
 
@@ -186,6 +202,66 @@ class AddQueryActivity : AppCompatActivity() {
                 .setAction(Intent.ACTION_GET_CONTENT)
             startActivityForResult(Intent.createChooser(intent, "Select a file"), FILE_CODE)
         }
+
+        demoMenu()
+    }
+
+    @OptIn(DelicateCoroutinesApi::class)
+    private fun demoMenu() {
+
+        val categoryItem = ArrayList<String>()
+        val cropsItem = ArrayList<String>()
+        val districtItem = ArrayList<String>()
+
+        GlobalScope.launch {
+            val data =
+                JSONObject(async { ApiHelper(this@AddQueryActivity).getAllCategory() }.await())
+                    .getJSONObject("result").getJSONArray("data")
+
+            val dataCrops =
+                JSONObject(async { ApiHelper(this@AddQueryActivity).getAllCrops() }.await())
+                    .getJSONObject("result").getJSONArray("data")
+
+            val dataDistrict =
+                JSONObject(async {
+                    ApiHelper(this@AddQueryActivity).getDistrictByState(
+                        DistrictData(
+                            0,
+                            "",
+                            0,
+                            "Gujarat"
+                        )
+                    )
+                }.await())
+                    .getJSONObject("result").getJSONArray("data")
+
+            (0 until data.length()).forEach { i ->
+                val categoryData =
+                    Gson().fromJson(data.getJSONObject(i).toString(), CategoryData::class.java)
+                categoryItem.add(categoryData.name)
+            }
+
+            (0 until dataCrops.length()).forEach { i ->
+                val cropsData =
+                    Gson().fromJson(dataCrops.getJSONObject(i).toString(), Crops::class.java)
+                cropsItem.add(cropsData.name.capitalize())
+            }
+
+            (0 until dataDistrict.length()).forEach { i ->
+                val districtData =
+                    Gson().fromJson(dataDistrict.getJSONObject(i).toString(), DistrictData::class.java)
+                districtItem.add(districtData.name.capitalize())
+            }
+        }
+
+        val categoryAdapter = ArrayAdapter(this@AddQueryActivity, R.layout.list_item, categoryItem)
+        val cropsAdapter = ArrayAdapter(this@AddQueryActivity, R.layout.list_item, cropsItem)
+        val districtAdapter = ArrayAdapter(this@AddQueryActivity, R.layout.list_item, districtItem)
+
+        mCategoryTextField.setAdapter(categoryAdapter)
+        mCropsTextField.setAdapter(cropsAdapter)
+        mDistrictTextField.setAdapter(districtAdapter)
+
     }
 
     private fun pauseAudio() {

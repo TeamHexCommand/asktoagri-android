@@ -2,6 +2,8 @@ package `in`.hexcommand.asktoagri.helper
 
 import `in`.hexcommand.asktoagri.data.CategoryData
 import `in`.hexcommand.asktoagri.data.ConfigData
+import `in`.hexcommand.asktoagri.data.DistrictData
+import `in`.hexcommand.asktoagri.data.StateData
 import `in`.hexcommand.asktoagri.model.Upload
 import `in`.hexcommand.asktoagri.model.User
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
@@ -153,6 +155,24 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
             "get",
             "category",
             "getById",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
+    suspend fun getAllCategory(): String {
+        return ApiHelper(context).sendRequest(
+            "get",
+            "category",
+            "getAll",
+            JSONObject()
+        )
+    }
+
+    suspend fun getDistrictByState(model: DistrictData): String {
+        return ApiHelper(context).sendRequest(
+            "get",
+            "district",
+            "getByStateName",
             JSONObject(Gson().toJson(model))
         )
     }

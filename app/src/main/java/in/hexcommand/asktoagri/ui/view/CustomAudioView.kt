@@ -7,6 +7,7 @@ import android.media.AudioManager
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.AttributeSet
+import android.util.Log
 import android.widget.ImageView
 import android.widget.LinearLayout
 import com.google.android.material.card.MaterialCardView
@@ -15,6 +16,7 @@ import kotlinx.coroutines.DelicateCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
+
 
 class CustomAudioView : LinearLayout {
 
@@ -30,9 +32,7 @@ class CustomAudioView : LinearLayout {
     constructor(context: Context) : super(context) {}
 
     constructor(
-        context: Context,
-        audioSrc: String,
-        autoPlay: Boolean = false
+        context: Context, audioSrc: String, autoPlay: Boolean = false
     ) : super(context) {
         this.audioSrc = audioSrc
         this.autoPlay = autoPlay
@@ -54,60 +54,62 @@ class CustomAudioView : LinearLayout {
     private fun init() {
         inflate(context, R.layout.holder_audio, this)
 
-        mediaPlayer = MediaPlayer()
+
 
         this.audioActionBtn = findViewById(R.id.audio_action)
         this.audioActionIcon = findViewById(R.id.audio_action_icon)
         this.audioProgress = findViewById(R.id.audio_progress)
 
         this.layoutParams = LayoutParams(
-            LayoutParams.MATCH_PARENT,
-            LayoutParams.WRAP_CONTENT
+            LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT
         )
-
-        try {
-            mediaPlayer.setDataSource(this.audioSrc)
-        } catch (e: IOException) {
-//            mediaPlayer.setDataSource(context, Uri.parse(this.audioSrc))
-        }
 
         setView()
     }
 
     private fun setView() {
+        this.mediaPlayer = MediaPlayer()
+
+        try {
+            if (this.audioSrc.startsWith("http")) {
+                this.mediaPlayer.setDataSource(this.audioSrc)
+            } else {
+                this.mediaPlayer.setDataSource(context, Uri.parse(this.audioSrc))
+            }
+        } catch (e: IOException) {
+            //
+        }
 
         if (this.autoPlay) {
             playAudio()
         }
 
-        if (mediaPlayer.isPlaying) {
+        if (this.mediaPlayer.isPlaying) {
             setStopIcon()
         } else {
             setPlayIcon()
         }
 
         audioActionBtn.setOnClickListener {
-            if (mediaPlayer.isPlaying) {
+            if (this.audioSrc.isNotEmpty() && this.mediaPlayer.isPlaying) {
                 pauseAudio()
             } else {
                 setStopIcon()
+                setView()
                 playAudio()
             }
         }
 
-        mediaPlayer.setOnCompletionListener {
-            audioProgress.progress = 0
-            audioActionIcon.setImageDrawable(context.getDrawable(R.drawable.round_play_arrow_24))
-            mediaPlayer.reset()
-            mediaPlayer.release()
-            mediaPlayer = MediaPlayer()
-
-            if (this.audioSrc.startsWith("http")) {
-                mediaPlayer.setDataSource(this.audioSrc)
-            } else {
-                setAudioSrc(tempUri)
+        this.mediaPlayer.setOnCompletionListener { mp ->
+            try {
+                Log.e("AudioView", "completed audio")
+                mp.release()
+                setView()
+            } catch (e: java.lang.Exception) {
+                e.printStackTrace()
             }
         }
+
     }
 
     private fun setPlayIcon() {
@@ -119,39 +121,43 @@ class CustomAudioView : LinearLayout {
     }
 
     fun pauseAudio() {
-        if (mediaPlayer.isPlaying) {
-            audioActionIcon.setImageDrawable(context.getDrawable(R.drawable.round_play_arrow_24))
-            mediaPlayer.pause()
-            mediaPlayer.reset()
-            mediaPlayer.release()
-            mediaPlayer = MediaPlayer()
-            mediaPlayer.setDataSource(this.audioSrc)
+        if (this.mediaPlayer.isPlaying) {
+            audioProgress.progress = 0
+            setPlayIcon()
+            this.mediaPlayer.pause()
+            this.mediaPlayer.reset()
+            this.mediaPlayer.release()
+            setView()
         }
     }
 
     fun setAudioSrc(uri: Uri) {
-        mediaPlayer = MediaPlayer()
+        this.mediaPlayer = MediaPlayer()
         this.tempUri = uri
-        mediaPlayer.setDataSource(context, uri)
+        this.mediaPlayer.setDataSource(context, uri)
     }
 
     @JvmName("setAudioSrc1")
     fun setAudioSrc(url: String) {
         if (url.isNotEmpty()) {
-            mediaPlayer = MediaPlayer()
-            mediaPlayer.setDataSource(Uri.parse(url).toString())
+            this.mediaPlayer = MediaPlayer()
+            this.mediaPlayer.setDataSource(Uri.parse(url).toString())
             this.audioSrc = url
+        }
+        if (!url.startsWith("http")) {
+            setAudioSrc(Uri.parse(url))
         }
     }
 
     @DelicateCoroutinesApi
     fun playAudio() {
         if (this.audioSrc.isNotEmpty()) {
-            mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
+            this.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             try {
-                mediaPlayer.prepare()
-                audioProgress.max = mediaPlayer.duration
-                mediaPlayer.start()
+                setStopIcon()
+                this.mediaPlayer.prepare()
+                audioProgress.max = this.mediaPlayer.duration
+                this.mediaPlayer.start()
 
                 val job = GlobalScope.launch {
                     println("${Thread.currentThread()} has run.")
@@ -159,7 +165,13 @@ class CustomAudioView : LinearLayout {
                     val total = mediaPlayer.duration
                     audioProgress.max = total
 
-                    while (mediaPlayer.isPlaying && currentPosition < total) {
+                    while (mediaPlayer.isPlaying && currentPosition <= total) {
+
+                        if (currentPosition == total) {
+                            pauseAudio()
+                            break
+                        }
+
                         currentPosition = try {
                             Thread.sleep(500)
                             mediaPlayer.currentPosition
