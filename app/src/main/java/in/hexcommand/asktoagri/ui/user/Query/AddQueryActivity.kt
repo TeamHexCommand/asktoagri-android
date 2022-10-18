@@ -4,15 +4,20 @@ import `in`.hexcommand.asktoagri.MainActivity
 import `in`.hexcommand.asktoagri.R
 import `in`.hexcommand.asktoagri.data.CategoryData
 import `in`.hexcommand.asktoagri.data.DistrictData
+import `in`.hexcommand.asktoagri.data.QueryData
 import `in`.hexcommand.asktoagri.helper.ApiHelper
+import `in`.hexcommand.asktoagri.helper.AppHelper
 import `in`.hexcommand.asktoagri.model.Crops
+import `in`.hexcommand.asktoagri.model.Upload
 import `in`.hexcommand.asktoagri.ui.view.AudioView
 import `in`.hexcommand.asktoagri.ui.view.CustomAudioView
 import `in`.hexcommand.asktoagri.ui.view.CustomImageView
 import `in`.hexcommand.asktoagri.ui.view.CustomVideoView
+import `in`.hexcommand.asktoagri.util.shared.LocalStorage
 import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Intent
+import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.media.AudioManager
@@ -20,14 +25,18 @@ import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.provider.OpenableColumns
 import android.util.Base64
 import android.util.Log
+import android.view.LayoutInflater
+import android.view.View
 import android.webkit.MimeTypeMap
 import android.widget.*
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.graphics.drawable.toBitmap
 import androidx.core.view.updateLayoutParams
 import androidx.media2.common.VideoSize
 import com.android.volley.RequestQueue
@@ -38,18 +47,18 @@ import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textview.MaterialTextView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
-import kotlinx.coroutines.DelicateCoroutinesApi
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.android.synthetic.main.activity_add_query.*
+import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 
 
+@DelicateCoroutinesApi
 class AddQueryActivity : AppCompatActivity() {
 
     companion object {
@@ -73,6 +82,7 @@ class AddQueryActivity : AppCompatActivity() {
     private lateinit var tmpImg: ImageView
 
     private val pickImage = 100
+    private var uploadId = 0
     private var imageUri: Uri? = null
     private var img: String = ""
 
@@ -81,15 +91,40 @@ class AddQueryActivity : AppCompatActivity() {
     private lateinit var mAudioActionBtn: MaterialCardView
     private lateinit var mAudioActionIcon: ImageView
     private var mIsPlaying: Boolean = false
+    private var mIsFileSelected: Boolean = false
+    private var mFileType: String = "text"
+    private var mFileBase64: String = ""
+    private var mFileExt: String = ""
 
     private lateinit var mVideoView: VideoView
     private lateinit var audioView: AudioView
 
     private lateinit var filePreview: MaterialCardView
+    private lateinit var filePreviewHolder: MaterialCardView
+    private lateinit var fileRemoveBtn: MaterialButton
 
     private lateinit var mCategoryTextField: AutoCompleteTextView
     private lateinit var mCropsTextField: AutoCompleteTextView
     private lateinit var mDistrictTextField: AutoCompleteTextView
+
+    private lateinit var ls: LocalStorage
+
+    private var queryData: QueryData = QueryData(
+        id = 0,
+        user = 0,
+        "",
+        "text",
+        "",
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        "",
+        0,
+        ""
+    )
 
     @SuppressLint("UseCompatLoadingForDrawables")
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -119,6 +154,12 @@ class AddQueryActivity : AppCompatActivity() {
         audioView = findViewById(R.id.audioView)
 
         filePreview = findViewById(R.id.queryFilePreview)
+        filePreviewHolder = findViewById(R.id.queryFilePreviewHolder)
+        fileRemoveBtn = findViewById(R.id.addQueryRemoveFile)
+
+        this.ls = LocalStorage(this)
+
+        queryData.user = ls.getValueInt("user_id")
 
         mVideoView.setVideoURI(Uri.parse("http://www.ebookfrenzy.com/android_book/movie.mp4"))
         val mediaController = MediaController(this)
@@ -142,6 +183,7 @@ class AddQueryActivity : AppCompatActivity() {
             mAudioActionIcon.setImageDrawable(getDrawable(R.drawable.round_play_arrow_24))
         }
 
+
         mAudioActionBtn.setOnClickListener {
             if (mediaPlayer.isPlaying) {
                 pauseAudio()
@@ -153,23 +195,17 @@ class AddQueryActivity : AppCompatActivity() {
         this.mRequestQueue = Volley.newRequestQueue(this)
 
         val adapter = ArrayAdapter.createFromResource(
-            this,
-            R.array.category_list,
-            android.R.layout.simple_spinner_item
+            this, R.array.category_list, android.R.layout.simple_spinner_item
         )
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         val adapterCrops = ArrayAdapter.createFromResource(
-            this,
-            R.array.crops_list,
-            android.R.layout.simple_spinner_item
+            this, R.array.crops_list, android.R.layout.simple_spinner_item
         )
         adapterCrops.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
 
         val adapterDis = ArrayAdapter.createFromResource(
-            this,
-            R.array.districts_list,
-            android.R.layout.simple_spinner_item
+            this, R.array.districts_list, android.R.layout.simple_spinner_item
         )
         adapterDis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         // Apply the adapter to the spinner
@@ -179,31 +215,143 @@ class AddQueryActivity : AppCompatActivity() {
 
         btn.setOnClickListener {
 
-            val b = bitmapToBase64(
-                tmpImg.drawable.toBitmap()
-            ).toString()
+            if (addQueryTitle.text.isNullOrEmpty()) {
+                addQueryTitle.error = "Enter query title"
+            } else {
+                queryData.title = addQueryTitle.text.toString()
+                queryData.body = addQueryContent.text.toString()
+                val d = startDialog("Please wait submitting your query")
 
-            addQuery(
-                title.text.toString(),
-                b,
-                spinnerCategory.selectedItem.toString(),
-                spinnerCrops.selectedItem.toString(),
-                spinnerDistricts.selectedItem.toString()
-            )
+                if (this.mIsFileSelected) {
+                    val user = LocalStorage(this).getValueInt("user_id")
+                    val upload = Upload(user = user, base64 = this.mFileBase64)
+
+                    GlobalScope.launch {
+
+                        val dataUpload: JSONObject = withContext(Dispatchers.Default) {
+                            return@withContext JSONObject(async {
+                                ApiHelper(this@AddQueryActivity).uploadFile(
+                                    upload
+                                )
+                            }.await()).getJSONObject("result").getJSONObject("data")
+                        }
+
+                        if (dataUpload.toString().isEmpty()) {
+                            runOnUiThread {
+                                Toast.makeText(
+                                    this@AddQueryActivity,
+                                    "Failed to add new query",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                d?.dismiss()
+                            }
+                        } else {
+                            val uploadData =
+                                Gson().fromJson(
+                                    dataUpload.toString(),
+                                    Upload::class.java
+                                )
+
+                            uploadId = uploadData.id
+                            queryData.file = uploadId
+
+                            addQueryRequest(d)
+                        }
+                    }
+                } else {
+                    GlobalScope.launch {
+                        addQueryRequest(d)
+                    }
+                }
+            }
+
+//            val b = bitmapToBase64(
+//                tmpImg.drawable.toBitmap()
+//            ).toString()
+//
+//            addQuery(
+//                title.text.toString(),
+//                b,
+//                spinnerCategory.selectedItem.toString(),
+//                spinnerCrops.selectedItem.toString(),
+//                spinnerDistricts.selectedItem.toString()
+//            )
+
+        }
+
+        fileRemoveBtn.setOnClickListener {
+            filePreviewHolder.visibility = View.GONE
+            filePreview.removeAllViews()
+            this.mIsFileSelected = false
+            mFileType = "text"
         }
 
         camera.setOnClickListener {
 //            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
 //            startActivityForResult(gallery, pickImage)
 
-
-            val intent = Intent()
-                .setType("*/*")
-                .setAction(Intent.ACTION_GET_CONTENT)
+            val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
             startActivityForResult(Intent.createChooser(intent, "Select a file"), FILE_CODE)
         }
 
         demoMenu()
+    }
+
+    private suspend fun addQueryRequest(d: AlertDialog?) {
+
+        try {
+            val dataQuery = withContext(Dispatchers.Default) {
+                return@withContext JSONObject(async {
+                    ApiHelper(this@AddQueryActivity).addQuery(
+                        queryData
+                    )
+                }.await())
+            }
+
+            runOnUiThread {
+                queryResult(dataQuery.getInt("code"), d)
+            }
+        } catch (e: JSONException) {
+            //
+        }
+
+    }
+
+    private fun queryResult(code: Int, dialog: AlertDialog?) {
+        Handler().postDelayed({
+            dialog?.dismiss()
+            if (code == 200) {
+                Toast.makeText(
+                    this@AddQueryActivity,
+                    "Query submitted",
+                    Toast.LENGTH_SHORT
+                ).show()
+                startActivity(
+                    Intent(
+                        this@AddQueryActivity,
+                        MainActivity::class.java
+                    ).setFlags(Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK)
+                )
+            } else {
+                Toast.makeText(
+                    this@AddQueryActivity,
+                    "Failed to add new query",
+                    Toast.LENGTH_SHORT
+                ).show()
+            }
+        }, 3000)
+    }
+
+    private fun startDialog(msg: String): androidx.appcompat.app.AlertDialog? {
+        val view: View = LayoutInflater.from(this).inflate(R.layout.dialog_common_loading, null)
+        val builder: androidx.appcompat.app.AlertDialog.Builder =
+            androidx.appcompat.app.AlertDialog
+                .Builder(this).setView(view)
+                .setView(view)
+
+        val dialogText = view.findViewById<MaterialTextView>(R.id.dialogLoadingText)
+        dialogText.text = msg
+        return builder.show()
     }
 
     @OptIn(DelicateCoroutinesApi::class)
@@ -213,45 +361,54 @@ class AddQueryActivity : AppCompatActivity() {
         val cropsItem = ArrayList<String>()
         val districtItem = ArrayList<String>()
 
+        val categoryItemData = ArrayList<CategoryData>()
+        val cropsItemData = ArrayList<Crops>()
+        val districtItemData = ArrayList<DistrictData>()
+
         GlobalScope.launch {
             val data =
-                JSONObject(async { ApiHelper(this@AddQueryActivity).getAllCategory() }.await())
-                    .getJSONObject("result").getJSONArray("data")
+                JSONObject(async { ApiHelper(this@AddQueryActivity).getAllCategory() }.await()).getJSONObject(
+                    "result"
+                ).getJSONArray("data")
 
             val dataCrops =
-                JSONObject(async { ApiHelper(this@AddQueryActivity).getAllCrops() }.await())
-                    .getJSONObject("result").getJSONArray("data")
+                JSONObject(async { ApiHelper(this@AddQueryActivity).getAllCrops() }.await()).getJSONObject(
+                    "result"
+                ).getJSONArray("data")
 
-            val dataDistrict =
-                JSONObject(async {
-                    ApiHelper(this@AddQueryActivity).getDistrictByState(
-                        DistrictData(
-                            0,
-                            "",
-                            0,
-                            "Gujarat"
-                        )
+            val dataDistrict = JSONObject(async {
+                ApiHelper(this@AddQueryActivity).getDistrictByState(
+                    DistrictData(
+                        0, "", 0, "Gujarat"
                     )
-                }.await())
-                    .getJSONObject("result").getJSONArray("data")
+                )
+            }.await()).getJSONObject("result").getJSONArray("data")
 
             (0 until data.length()).forEach { i ->
                 val categoryData =
                     Gson().fromJson(data.getJSONObject(i).toString(), CategoryData::class.java)
+                categoryItemData.add(categoryData)
                 categoryItem.add(categoryData.name)
             }
 
             (0 until dataCrops.length()).forEach { i ->
                 val cropsData =
                     Gson().fromJson(dataCrops.getJSONObject(i).toString(), Crops::class.java)
+                cropsItemData.add(cropsData)
                 cropsItem.add(cropsData.name.capitalize())
             }
 
             (0 until dataDistrict.length()).forEach { i ->
-                val districtData =
-                    Gson().fromJson(dataDistrict.getJSONObject(i).toString(), DistrictData::class.java)
+                val districtData = Gson().fromJson(
+                    dataDistrict.getJSONObject(i).toString(), DistrictData::class.java
+                )
+                districtItemData.add(districtData)
                 districtItem.add(districtData.name.capitalize())
             }
+
+            queryData.category = categoryItemData[0].id
+            queryData.crops = cropsItemData[0].id
+            queryData.district = districtItemData[0].id
         }
 
         val categoryAdapter = ArrayAdapter(this@AddQueryActivity, R.layout.list_item, categoryItem)
@@ -261,6 +418,18 @@ class AddQueryActivity : AppCompatActivity() {
         mCategoryTextField.setAdapter(categoryAdapter)
         mCropsTextField.setAdapter(cropsAdapter)
         mDistrictTextField.setAdapter(districtAdapter)
+
+        mCategoryTextField.setOnItemClickListener { _, _, position, _ ->
+            queryData.category = categoryItemData[position].id
+        }
+
+        mCropsTextField.setOnItemClickListener { _, _, position, _ ->
+            queryData.crops = cropsItemData[position].id
+        }
+
+        mDistrictTextField.setOnItemClickListener { _, _, position, _ ->
+            queryData.district = districtItemData[position].id
+        }
 
     }
 
@@ -334,6 +503,7 @@ class AddQueryActivity : AppCompatActivity() {
         Toast.makeText(this, "Audio started playing..", Toast.LENGTH_SHORT).show()
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == pickImage) {
@@ -342,28 +512,58 @@ class AddQueryActivity : AppCompatActivity() {
         }
 
         if (resultCode == RESULT_OK && requestCode == FILE_CODE) {
+
             val selectedFile = data?.data?.also { uri ->
-                val cR: ContentResolver = this.contentResolver
-                val mime = cR.getType(uri)
-                renderPreview(uri, mime.toString())
-                Log.e("AdQuery", mime.toString())
+                val returnCursor: Cursor? = contentResolver.query(uri, null, null, null, null)
+                val sizeIndex: Int = returnCursor!!.getColumnIndex(OpenableColumns.SIZE)
+                returnCursor.moveToFirst()
+                val size: Int = returnCursor.getInt(sizeIndex) / 1024
+
+                returnCursor.close()
+
+                if (size >= 10240) {
+                    Toast.makeText(this, "Please select file less then 10MB", Toast.LENGTH_SHORT)
+                        .show()
+                } else {
+                    val cR: ContentResolver = this.contentResolver
+                    val mime = cR.getType(uri)
+                    this.mFileType = mime.toString()
+
+                    GlobalScope.launch {
+                        val base = AppHelper(this@AddQueryActivity).fileUriToBase64(
+                            uri,
+                            applicationContext.contentResolver
+                        )!!
+                        mFileBase64 = "data:$mime;base64,$base"
+                    }
+
+                    renderPreview(uri, mime.toString())
+                    Log.e("AdQuery", mime.toString())
+                }
             }
         }
     }
 
     fun renderPreview(uri: Uri, type: String) {
 
+        filePreviewHolder.visibility = View.VISIBLE
         filePreview.removeAllViews()
 
+        this.mIsFileSelected = true
+
         if (type == "image/jpeg" || type == "image/png" || type == "image/jpg") {
+            queryData.type = "image"
+            mFileType = "image"
             Toast.makeText(this, "Image selected", Toast.LENGTH_SHORT).show()
             filePreview.addView(
                 CustomImageView(
-                    this,
-                    uri.toString()
+                    this, uri.toString()
                 )
             )
         } else if (type == "video/mpeg" || type == "video/mp4" || type == "video/x-matroska" || type == "video/x-msvideo") {
+            queryData.type = "video"
+            mFileType = "video"
+            mFileExt
             Toast.makeText(this, "Video selected", Toast.LENGTH_SHORT).show()
             val vid = uri.getVideoSize()
             Log.e("AddQuery", vid.toString())
@@ -378,10 +578,7 @@ class AddQueryActivity : AppCompatActivity() {
 
             Log.e("AddQuery", vratio)
             val customVideoView = CustomVideoView(
-                this,
-                uri.toString(),
-                false,
-                false
+                this, uri.toString(), false, false
             )
 
             customVideoView.videoView.updateLayoutParams<ConstraintLayout.LayoutParams> {
@@ -392,11 +589,11 @@ class AddQueryActivity : AppCompatActivity() {
                 customVideoView
             )
         } else if (type == "audio/mpeg" || type == "audio/x-matroska" || type == "audio/mp3" || type == "audio/ogg") {
+            queryData.type = "audio"
+            mFileType = "audio"
             Toast.makeText(this, "Audio selected", Toast.LENGTH_SHORT).show()
             val customAudioView = CustomAudioView(
-                this,
-                uri.toString(),
-                false
+                this, uri.toString(), false
             )
 
             customAudioView.setAudioSrc(uri)
@@ -405,10 +602,13 @@ class AddQueryActivity : AppCompatActivity() {
                 customAudioView
             )
         } else {
+
+            filePreviewHolder.visibility = View.GONE
+            filePreview.removeAllViews()
+            this.mIsFileSelected = false
+
             Toast.makeText(
-                this,
-                "Invalid file, Only image,videos and audio supports",
-                Toast.LENGTH_SHORT
+                this, "Invalid file, Only image,videos and audio supports", Toast.LENGTH_SHORT
             ).show()
         }
     }
@@ -458,9 +658,7 @@ class AddQueryActivity : AppCompatActivity() {
 
         val currentuser = FirebaseAuth.getInstance().currentUser!!.uid
 
-        val stringRequest = @SuppressLint("Range")
-        object : StringRequest(
-            Method.POST,
+        val stringRequest = @SuppressLint("Range") object : StringRequest(Method.POST,
             "https://asktoagri.planckstudio.in/api/v1/",
             Response.Listener {
                 try {
@@ -484,12 +682,8 @@ class AddQueryActivity : AppCompatActivity() {
                 jsonQuery.put("task", "query")
                 jsonQuery.put(
                     "data",
-                    JSONObject()
-                        .put("title", title)
-                        .put("content", content)
-                        .put("userId", currentuser)
-                        .put("region", region)
-                        .put("category", category)
+                    JSONObject().put("title", title).put("content", content)
+                        .put("userId", currentuser).put("region", region).put("category", category)
                         .put("crops", crops)
                 )
                 jsonBody.put("type", "add")

@@ -3,7 +3,7 @@ package `in`.hexcommand.asktoagri.helper
 import `in`.hexcommand.asktoagri.data.CategoryData
 import `in`.hexcommand.asktoagri.data.ConfigData
 import `in`.hexcommand.asktoagri.data.DistrictData
-import `in`.hexcommand.asktoagri.data.StateData
+import `in`.hexcommand.asktoagri.data.QueryData
 import `in`.hexcommand.asktoagri.model.Upload
 import `in`.hexcommand.asktoagri.model.User
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
@@ -45,6 +45,51 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
     ) =
         suspendCoroutine<String> { r ->
             val waitFor = CoroutineScope(Dispatchers.IO).async {
+                val stringRequest = object : StringRequest(
+                    Method.POST,
+                    AppHelper(context).getApiUrl(),
+                    Response.Listener {
+                        Log.e("API", it)
+                        r.resume(it)
+                    },
+                    Response.ErrorListener {
+                        r.resume(it.toString())
+                    }) {
+
+                    override fun getBody(): ByteArray {
+
+                        val rqst = JSONObject()
+                            .put("request", request)
+                            .put("type", type)
+                            .put("filter", filter)
+                            .put("param", param)
+                            .toString()
+
+                        Log.e("API", rqst.toString())
+
+                        return rqst.toByteArray()
+                    }
+
+//                    @Throws(AuthFailureError::class)
+//                    override fun getHeaders(): Map<String, String> {
+//                        return header
+//                    }
+                }
+                stringRequest.setShouldCache(false)
+                mRequestQueue.add(stringRequest)
+            }
+        }
+
+
+    private suspend fun sendMultipartRequest(
+        request: String,
+        type: String,
+        filter: String,
+        param: JSONObject
+    ) =
+        suspendCoroutine<String> { r ->
+            val waitFor = CoroutineScope(Dispatchers.IO).async {
+
                 val stringRequest = object : StringRequest(
                     Method.POST,
                     AppHelper(context).getApiUrl(),
@@ -132,6 +177,15 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
         )
     }
 
+    suspend fun addQuery(model: QueryData): String {
+        return ApiHelper(context).sendRequest(
+            "add",
+            "query",
+            "",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
     suspend fun getAllCrops(): String {
         return ApiHelper(context).sendRequest(
             "get",
@@ -190,6 +244,15 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
         return ApiHelper(context).sendRequest(
             "add",
             "config",
+            "",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
+    suspend fun uploadFile(model: Upload): String {
+        return ApiHelper(context).sendRequest(
+            "add",
+            "upload",
             "",
             JSONObject(Gson().toJson(model))
         )

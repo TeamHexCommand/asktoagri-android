@@ -6,6 +6,7 @@ data class Upload(
     @SerializedName("id") var id: Int = 0,
     @SerializedName("user") var user: Int = 0,
     @SerializedName("name") var name: String = "",
+    @SerializedName("base64") var base64: String = "",
     @SerializedName("type") var type: String = "",
     @SerializedName("createdAt") var createdAt: String = ""
 )

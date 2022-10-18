@@ -7,5 +7,5 @@ data class ConfigData(
     @SerializedName("user") var user: Int = 0,
     @SerializedName("name") var name: String = "",
     @SerializedName("value") var value: String = "",
-    @SerializedName("acreatedAt") var createdAt: String = ""
+    @SerializedName("createdAt") var createdAt: String = ""
 )

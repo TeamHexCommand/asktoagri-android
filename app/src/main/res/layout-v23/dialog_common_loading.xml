@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="64dp">
+
+    <ImageView
+        android:layout_marginBottom="16dp"
+        android:layout_gravity="center"
+        android:src="@mipmap/ic_launcher_round"
+        android:layout_width="64dp"
+        android:layout_height="64dp"
+        tools:ignore="ContentDescription" />
+
+    <ProgressBar
+        android:layout_marginStart="32dp"
+        android:layout_marginEnd="32dp"
+        style="@style/Widget.AppCompat.ProgressBar.Horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:indeterminate="true"
+        android:indeterminateTint="@color/primaryColor" />
+
+    <com.google.android.material.textview.MaterialTextView
+        android:id="@+id/dialogLoadingText"
+        style="@style/TextAppearance.AppCompat.Caption"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:gravity="center"
+        android:text="Processing your request"
+        tools:ignore="HardcodedText" />
+
+</LinearLayout>

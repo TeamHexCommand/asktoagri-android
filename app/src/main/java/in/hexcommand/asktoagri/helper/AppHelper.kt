@@ -8,9 +8,12 @@ import `in`.hexcommand.asktoagri.database.ArticalDatabase
 import `in`.hexcommand.asktoagri.model.AddressModel
 import `in`.hexcommand.asktoagri.model.User
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
+import android.annotation.SuppressLint
+import android.content.ContentResolver
 import android.content.Context
 import android.location.Address
 import android.location.Geocoder
+import android.net.Uri
 import android.util.Base64
 import com.android.volley.toolbox.Volley
 import com.google.firebase.auth.FirebaseAuth
@@ -19,7 +22,9 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
+import java.io.ByteArrayOutputStream
 import java.io.IOException
+import java.io.InputStream
 import java.util.*
 
 class AppHelper(private val context: Context) {
@@ -143,6 +148,38 @@ class AppHelper(private val context: Context) {
     fun logoutUser() {
         FirebaseAuth.getInstance().signOut()
         ls.clearSharedPreference()
+    }
+
+    fun fileUriToBase64(uri: Uri, resolver: ContentResolver): String? {
+        var encodedBase64: String? = ""
+        try {
+            val bytes: ByteArray = readBytes(uri, resolver)
+            encodedBase64 = Base64.encodeToString(bytes, 0)
+        } catch (e1: IOException) {
+            e1.printStackTrace()
+        }
+        return encodedBase64
+    }
+
+    @SuppressLint("Recycle")
+    @Throws(IOException::class)
+    private fun readBytes(uri: Uri, resolver: ContentResolver): ByteArray {
+        // this dynamically extends to take the bytes you read
+        val inputStream: InputStream? = resolver.openInputStream(uri)
+        val byteBuffer = ByteArrayOutputStream()
+
+        // this is storage overwritten on each iteration with bytes
+        val bufferSize = 1024
+        val buffer = ByteArray(bufferSize)
+
+        // we need to know how may bytes were read to write them to the
+        // byteBuffer
+        var len = 0
+        while (inputStream?.read(buffer).also { len = it!! } != -1) {
+            byteBuffer.write(buffer, 0, len)
+        }
+        // and then we can return your byte array.
+        return byteBuffer.toByteArray()
     }
 
     companion object {

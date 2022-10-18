@@ -17,7 +17,6 @@ import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
 import java.io.IOException
 
-
 class CustomAudioView : LinearLayout {
 
     var autoPlay: Boolean = false
