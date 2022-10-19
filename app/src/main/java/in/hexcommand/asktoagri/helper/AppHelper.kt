@@ -4,8 +4,13 @@ package `in`.hexcommand.asktoagri.helper
 
 import `in`.hexcommand.asktoagri.R
 import `in`.hexcommand.asktoagri.data.ArticalData
+import `in`.hexcommand.asktoagri.data.CategoryData
+import `in`.hexcommand.asktoagri.data.DistrictData
+import `in`.hexcommand.asktoagri.data.SolutionData
 import `in`.hexcommand.asktoagri.database.ArticalDatabase
 import `in`.hexcommand.asktoagri.model.AddressModel
+import `in`.hexcommand.asktoagri.model.Crops
+import `in`.hexcommand.asktoagri.model.Upload
 import `in`.hexcommand.asktoagri.model.User
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
 import android.annotation.SuppressLint
@@ -14,6 +19,7 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
+import android.provider.Settings.Secure
 import android.util.Base64
 import com.android.volley.toolbox.Volley
 import com.google.firebase.auth.FirebaseAuth
@@ -26,6 +32,7 @@ import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.io.InputStream
 import java.util.*
+
 
 class AppHelper(private val context: Context) {
 
@@ -180,6 +187,78 @@ class AppHelper(private val context: Context) {
         }
         // and then we can return your byte array.
         return byteBuffer.toByteArray()
+    }
+
+    suspend fun getCategoryById(model: CategoryData): CategoryData? {
+        val response = JSONObject(ApiHelper(context).getCategoryById(model))
+        return if (response.getInt("code") == 200) {
+            val data = response.getJSONObject("result").getJSONArray("data").getJSONObject(0)
+            Gson().fromJson(data.toString(), CategoryData::class.java)
+        } else null
+    }
+
+    suspend fun getUploadById(model: Upload): Upload? {
+
+        val response = JSONObject(ApiHelper(context).getUploadById(model))
+        val data = this.getResponseData(response)
+
+        return if (data != null) {
+            return Gson().fromJson(data.toString(), Upload::class.java)
+        } else null
+
+    }
+
+    suspend fun getCropsById(model: Crops): Crops? {
+        val response = JSONObject(ApiHelper(context).getCropsById(model))
+        val data = this.getResponseData(response)
+        return if (data != null) {
+            return Gson().fromJson(data.toString(), Crops::class.java)
+        } else null
+    }
+
+    suspend fun getSolutionById(model: SolutionData): SolutionData? {
+        val response = JSONObject(ApiHelper(context).getSolutionById(model))
+        val data = this.getResponseData(response)
+        return if (data != null) {
+            return Gson().fromJson(data.toString(), SolutionData::class.java)
+        } else null
+    }
+
+    suspend fun getDistrictById(model: DistrictData): DistrictData? {
+        val response = JSONObject(ApiHelper(context).getDistrictById(model))
+        val data = this.getResponseData(response)
+        return if (data != null) {
+            return Gson().fromJson(data.toString(), DistrictData::class.java)
+        } else null
+    }
+
+    private suspend fun getResponseData(response: JSONObject): String? {
+        return if (response.getInt("code") == 200) {
+            response.getJSONObject("result").getJSONArray("data").getJSONObject(0).toString()
+        } else null
+    }
+
+    fun getFileUrl(upload: Upload): String {
+        return "${getConfigUrl("uploads")}${upload.name}.${upload.type}"
+    }
+
+    @SuppressLint("HardwareIds")
+    fun getHeaders(): Map<String, String> {
+
+        val hashMap = HashMap<String, String>()
+
+        if (ls.getValueBoolean("is_login")) {
+            hashMap["x-user-token"] = ls.getValueString("user_token")
+            hashMap["x-user-id"] = ls.getValueString("user_id")
+        }
+
+        val android_id = Secure.getString(
+            context.getContentResolver(),
+            Secure.ANDROID_ID
+        )
+
+        hashMap["x-user-device"] = android_id
+        return hashMap
     }
 
     companion object {

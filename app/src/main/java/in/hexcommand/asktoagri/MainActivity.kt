@@ -1,18 +1,19 @@
 package `in`.hexcommand.asktoagri
 
 import `in`.hexcommand.asktoagri.adapter.TrendingAdapter
+import `in`.hexcommand.asktoagri.data.CategoryData
 import `in`.hexcommand.asktoagri.helper.AppHelper
 import `in`.hexcommand.asktoagri.helper.WebViewHelper
+import `in`.hexcommand.asktoagri.ui.common.QueryListActivity
 import `in`.hexcommand.asktoagri.ui.user.Query.AddQueryActivity
-import `in`.hexcommand.asktoagri.ui.user.Query.UserQueryActivity
 import `in`.hexcommand.asktoagri.ui.user.Trending.TrendingActivity
 import `in`.hexcommand.asktoagri.ui.user.Trending.TrendingModel
-import `in`.hexcommand.asktoagri.ui.view.CustomQueryCardView
 import `in`.hexcommand.asktoagri.ui.view.QueryCardView
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
 import android.annotation.SuppressLint
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -20,6 +21,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.card.MaterialCardView
+import kotlinx.coroutines.*
 import org.json.JSONArray
 
 class MainActivity : AppCompatActivity() {
@@ -46,70 +48,19 @@ class MainActivity : AppCompatActivity() {
         mChat = findViewById(R.id.openChat)
         mTrendingItems = findViewById(R.id.trending_article_main)
         bottomBar = findViewById(R.id.mainBottomNav)
-        queryCard = findViewById(R.id.custom_query_card)
         customView = findViewById(R.id.mainCustomView)
 
-        val customQueryCardView = CustomQueryCardView(
-            this,
-            "text",
-            "Common",
-            "demo",
-            ""
-        )
+        val categoryData = CategoryData(id = 1)
 
-        customView.addView(customQueryCardView)
+        GlobalScope.launch {
+            val category: CategoryData? = withContext(Dispatchers.Default) {
+                return@withContext async { AppHelper(this@MainActivity).getCategoryById(categoryData) }.await()
+            }
 
-        customView.addView(
-            CustomQueryCardView(
-                this,
-                "image",
-                "Common",
-                "Sample image query submission",
-                "https://res.cloudinary.com/dtpgi0zck/image/upload/s--KuHP6sEY--/c_fill,h_580,w_860/v1/EducationHub/photos/crops-growing-in-thailand.jpg"
-            )
-        )
-
-        customView.addView(
-            CustomQueryCardView(
-                this,
-                "audio",
-                "Common",
-                "Sample audio query submission",
-                "https://sklktecdnems02.cdnsrv.jio.com/jiosaavn.cdn.jio.com/799/c7fcdb5d33731d6d044462b7e29970c9_96.mp4"
-            )
-        )
-
-        customView.addView(
-            CustomQueryCardView(
-                this,
-                "video",
-                "Common",
-                "Sample video query submission",
-                "http://www.ebookfrenzy.com/android_book/movie.mp4",
-                false
-            )
-        )
-
-        customView.addView(
-            CustomQueryCardView(
-                this,
-                "audio",
-                "Common",
-                "Sample audio query submission",
-                "https://sklktecdnems02.cdnsrv.jio.com/jiosaavn.cdn.jio.com/799/c7fcdb5d33731d6d044462b7e29970c9_96.mp4"
-            )
-        )
-
-        customView.addView(
-            CustomQueryCardView(
-                this,
-                "video",
-                "Common",
-                "Sample video query submission",
-                "http://www.ebookfrenzy.com/android_book/movie.mp4",
-                false
-            )
-        )
+            if (category != null) {
+                Log.e("MainActivity", category.name)
+            }
+        }
 
 //        renderTrendingItems()
 
@@ -130,29 +81,16 @@ class MainActivity : AppCompatActivity() {
                     true
                 }
                 R.id.pageAdd -> {
-//                    val currentuser = FirebaseAuth.getInstance().currentUser!!
-//                        .uid
-//                    var u = "https://asktoagri.planckstudio.in/app/addquery.php?userId=${currentFocus}}"
-//                    startActivity(
-//                        Intent(this, WebViewHelper::class.java).putExtra(
-//                            "title",
-//                            "Add query"
-//                        ).putExtra("weburl", u)
-//                    )
-                    //                    startActivity(
                     startActivity(Intent(this, AddQueryActivity::class.java))
                     true
                 }
                 R.id.pageArticle -> {
-                    startActivity(Intent(this, UserQueryActivity::class.java))
-//                    val currentuser = FirebaseAuth.getInstance().currentUser!!
-//                        .uid
-//                    var u = "https://asktoagri.planckstudio.in/app/querybyuserid.php?userId=${currentuser}"
-//                    startActivity(
-//                        Intent(this, WebViewHelper::class.java).putExtra(
-//                            "title",
-//                            "Your query"
-//                        ).putExtra("weburl", u)
+                    startActivity(
+                        Intent(this, QueryListActivity::class.java).putExtra(
+                            "filter",
+                            "userQuery"
+                        )
+                    )
 //                    )
                     true
                 }
@@ -168,7 +106,6 @@ class MainActivity : AppCompatActivity() {
 
 //        val apiKey = Keys.apiKey()
 //        Log.e("KEY", apiKey)
-
 
     }
 

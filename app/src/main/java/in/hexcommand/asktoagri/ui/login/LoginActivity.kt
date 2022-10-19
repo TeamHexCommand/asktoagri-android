@@ -277,6 +277,7 @@ class LoginActivity : AppCompatActivity() {
         ls.save("is_login", true)
         ls.save("show_onboard", false)
         ls.save("is_guest_login", false)
+        ls.save("user_token", user?.getIdToken(false).toString())
 
         val u = User(
             firebaseID = user?.uid.toString(),
@@ -335,6 +336,8 @@ class LoginActivity : AppCompatActivity() {
 
             ls.save("user_id", userModel.id)
             ls.save("user_mobile", userModel.mobile)
+            ls.save("user_firebaseId", userModel.firebaseID)
+            ls.save("user_fcm", userModel.defaultFcm)
 
             if (ls.getValueBoolean("is_new_user")) {
                 val selectedCrops = JSONArray(ls.getValueString("selected_crops"))

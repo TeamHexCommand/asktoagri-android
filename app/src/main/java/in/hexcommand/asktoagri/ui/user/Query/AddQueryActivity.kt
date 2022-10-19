@@ -9,7 +9,6 @@ import `in`.hexcommand.asktoagri.helper.ApiHelper
 import `in`.hexcommand.asktoagri.helper.AppHelper
 import `in`.hexcommand.asktoagri.model.Crops
 import `in`.hexcommand.asktoagri.model.Upload
-import `in`.hexcommand.asktoagri.ui.view.AudioView
 import `in`.hexcommand.asktoagri.ui.view.CustomAudioView
 import `in`.hexcommand.asktoagri.ui.view.CustomImageView
 import `in`.hexcommand.asktoagri.ui.view.CustomVideoView
@@ -20,11 +19,11 @@ import android.content.Intent
 import android.database.Cursor
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.media.AudioManager
 import android.media.MediaMetadataRetriever
 import android.media.MediaPlayer
 import android.net.Uri
 import android.os.Bundle
+import android.os.Environment
 import android.os.Handler
 import android.provider.OpenableColumns
 import android.util.Base64
@@ -39,23 +38,25 @@ import androidx.cardview.widget.CardView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.view.updateLayoutParams
 import androidx.media2.common.VideoSize
+import com.abedelazizshe.lightcompressorlibrary.CompressionListener
+import com.abedelazizshe.lightcompressorlibrary.VideoCompressor
+import com.abedelazizshe.lightcompressorlibrary.VideoQuality
+import com.abedelazizshe.lightcompressorlibrary.config.Configuration
+import com.abedelazizshe.lightcompressorlibrary.config.StorageConfiguration
 import com.android.volley.RequestQueue
-import com.android.volley.Response
-import com.android.volley.toolbox.StringRequest
 import com.android.volley.toolbox.Volley
 import com.google.android.material.button.MaterialButton
 import com.google.android.material.card.MaterialCardView
 import com.google.android.material.progressindicator.LinearProgressIndicator
 import com.google.android.material.textfield.TextInputEditText
 import com.google.android.material.textview.MaterialTextView
-import com.google.firebase.auth.FirebaseAuth
 import com.google.gson.Gson
 import kotlinx.android.synthetic.main.activity_add_query.*
 import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
 import java.io.ByteArrayOutputStream
-import java.io.IOException
+import java.io.File
 
 
 @DelicateCoroutinesApi
@@ -90,14 +91,10 @@ class AddQueryActivity : AppCompatActivity() {
     private lateinit var mAudioProgress: LinearProgressIndicator
     private lateinit var mAudioActionBtn: MaterialCardView
     private lateinit var mAudioActionIcon: ImageView
-    private var mIsPlaying: Boolean = false
     private var mIsFileSelected: Boolean = false
     private var mFileType: String = "text"
     private var mFileBase64: String = ""
     private var mFileExt: String = ""
-
-    private lateinit var mVideoView: VideoView
-    private lateinit var audioView: AudioView
 
     private lateinit var filePreview: MaterialCardView
     private lateinit var filePreviewHolder: MaterialCardView
@@ -108,6 +105,8 @@ class AddQueryActivity : AppCompatActivity() {
     private lateinit var mDistrictTextField: AutoCompleteTextView
 
     private lateinit var ls: LocalStorage
+
+    private lateinit var customAudioView: CustomAudioView
 
     private var queryData: QueryData = QueryData(
         id = 0,
@@ -131,87 +130,24 @@ class AddQueryActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_add_query)
 
-        spinnerCategory = findViewById(R.id.spinnerCategory)
-        spinnerCrops = findViewById(R.id.spinnerCrops)
-        spinnerDistricts = findViewById(R.id.spinnerDistricts)
         title = findViewById(R.id.addQueryTitle)
         content = findViewById(R.id.addQueryContent)
-        region = findViewById(R.id.addQueryRegion)
         btn = findViewById(R.id.submit_query_btn)
         camera = findViewById(R.id.cameraBtn)
-        tmpImg = findViewById(R.id.tmpImg)
-
-        mVideoView = findViewById(R.id.addQueryVideoView)
-        mAudioProgress = findViewById(R.id.audio_progress)
-        mAudioActionBtn = findViewById(R.id.audio_action)
-        mAudioActionIcon = findViewById(R.id.audio_action_icon)
 
         mCategoryTextField = findViewById(R.id.addQueryCategoryMenuText)
         mCropsTextField = findViewById(R.id.addQueryCropsMenuText)
         mDistrictTextField = findViewById(R.id.addQueryDistrictMenuText)
         mDistrictTextField = findViewById(R.id.addQueryDistrictMenuText)
 
-        audioView = findViewById(R.id.audioView)
-
         filePreview = findViewById(R.id.queryFilePreview)
         filePreviewHolder = findViewById(R.id.queryFilePreviewHolder)
         fileRemoveBtn = findViewById(R.id.addQueryRemoveFile)
 
         this.ls = LocalStorage(this)
-
         queryData.user = ls.getValueInt("user_id")
 
-        mVideoView.setVideoURI(Uri.parse("http://www.ebookfrenzy.com/android_book/movie.mp4"))
-        val mediaController = MediaController(this)
-
-        // sets the anchor view
-        // anchor view for the videoView
-        mediaController.setAnchorView(mVideoView)
-
-        // sets the media player to the videoView
-        mediaController.setMediaPlayer(mVideoView)
-
-        // sets the media controller to the videoView
-        mVideoView.setMediaController(mediaController)
-//        mVideoView.start()
-
-        mediaPlayer = MediaPlayer()
-
-        if (mediaPlayer.isPlaying) {
-            mAudioActionIcon.setImageDrawable(getDrawable(R.drawable.round_stop_24))
-        } else {
-            mAudioActionIcon.setImageDrawable(getDrawable(R.drawable.round_play_arrow_24))
-        }
-
-
-        mAudioActionBtn.setOnClickListener {
-            if (mediaPlayer.isPlaying) {
-                pauseAudio()
-            } else {
-                playAudio()
-            }
-        }
-
         this.mRequestQueue = Volley.newRequestQueue(this)
-
-        val adapter = ArrayAdapter.createFromResource(
-            this, R.array.category_list, android.R.layout.simple_spinner_item
-        )
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        val adapterCrops = ArrayAdapter.createFromResource(
-            this, R.array.crops_list, android.R.layout.simple_spinner_item
-        )
-        adapterCrops.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-
-        val adapterDis = ArrayAdapter.createFromResource(
-            this, R.array.districts_list, android.R.layout.simple_spinner_item
-        )
-        adapterDis.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
-        // Apply the adapter to the spinner
-        spinnerCategory.adapter = adapter
-        spinnerCrops.adapter = adapterCrops
-        spinnerDistricts.adapter = adapterDis
 
         btn.setOnClickListener {
 
@@ -264,22 +200,14 @@ class AddQueryActivity : AppCompatActivity() {
                     }
                 }
             }
-
-//            val b = bitmapToBase64(
-//                tmpImg.drawable.toBitmap()
-//            ).toString()
-//
-//            addQuery(
-//                title.text.toString(),
-//                b,
-//                spinnerCategory.selectedItem.toString(),
-//                spinnerCrops.selectedItem.toString(),
-//                spinnerDistricts.selectedItem.toString()
-//            )
-
         }
 
         fileRemoveBtn.setOnClickListener {
+
+            if (queryData.type == "audio") {
+                customAudioView.pauseAudio()
+            }
+
             filePreviewHolder.visibility = View.GONE
             filePreview.removeAllViews()
             this.mIsFileSelected = false
@@ -287,9 +215,6 @@ class AddQueryActivity : AppCompatActivity() {
         }
 
         camera.setOnClickListener {
-//            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-//            startActivityForResult(gallery, pickImage)
-
             val intent = Intent().setType("*/*").setAction(Intent.ACTION_GET_CONTENT)
             startActivityForResult(Intent.createChooser(intent, "Select a file"), FILE_CODE)
         }
@@ -298,7 +223,6 @@ class AddQueryActivity : AppCompatActivity() {
     }
 
     private suspend fun addQueryRequest(d: AlertDialog?) {
-
         try {
             val dataQuery = withContext(Dispatchers.Default) {
                 return@withContext JSONObject(async {
@@ -356,7 +280,6 @@ class AddQueryActivity : AppCompatActivity() {
 
     @OptIn(DelicateCoroutinesApi::class)
     private fun demoMenu() {
-
         val categoryItem = ArrayList<String>()
         val cropsItem = ArrayList<String>()
         val districtItem = ArrayList<String>()
@@ -433,84 +356,9 @@ class AddQueryActivity : AppCompatActivity() {
 
     }
 
-    private fun pauseAudio() {
-        if (mediaPlayer.isPlaying) {
-            // pausing the media player if media player
-            // is playing we are calling below line to
-            // stop our media player.
-            mediaPlayer.pause()
-            mAudioActionIcon.setImageDrawable(getDrawable(R.drawable.round_play_arrow_24))
-
-//            mediaPlayer.reset();
-//            mediaPlayer.release();
-
-            // below line is to display a message
-            // when media player is paused.
-            Toast.makeText(this, "Audio has been paused", Toast.LENGTH_SHORT).show();
-        } else {
-            // this method is called when media
-            // player is not playing.
-            Toast.makeText(this, "Audio has not played", Toast.LENGTH_SHORT).show();
-        }
-    }
-
-    private fun playAudio() {
-        val audioUrl = "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3"
-
-        // initializing media player
-        mediaPlayer = MediaPlayer()
-
-        // below line is use to set the audio
-        // stream type for our media player.
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
-
-        // below line is use to set our
-        // url to our media player.
-        try {
-            mediaPlayer.setDataSource(audioUrl)
-            // below line is use to prepare
-            // and start our media player.
-            mAudioActionIcon.setImageDrawable(getDrawable(R.drawable.round_stop_24))
-            mediaPlayer.prepare()
-            mAudioProgress.max = mediaPlayer.duration
-            mediaPlayer.start()
-
-//            val t = Thread().start()
-
-            val job = GlobalScope.launch {
-                println("${Thread.currentThread()} has run.")
-                var currentPosition = mediaPlayer.currentPosition
-                val total = mediaPlayer.duration
-                mAudioProgress.max = total
-                while (mediaPlayer != null && mediaPlayer.isPlaying && currentPosition < total) {
-                    currentPosition = try {
-                        Thread.sleep(500)
-                        mediaPlayer.currentPosition
-                    } catch (e: InterruptedException) {
-                        return@launch
-                    } catch (e: Exception) {
-                        return@launch
-                    }
-                    runOnUiThread { mAudioProgress.setProgress(currentPosition) }
-
-                }
-            }
-
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        // below line is use to display a toast message.
-        Toast.makeText(this, "Audio started playing..", Toast.LENGTH_SHORT).show()
-    }
-
     @OptIn(DelicateCoroutinesApi::class)
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
-        if (resultCode == RESULT_OK && requestCode == pickImage) {
-            imageUri = data?.data
-            tmpImg.setImageURI(imageUri)
-        }
-
         if (resultCode == RESULT_OK && requestCode == FILE_CODE) {
 
             val selectedFile = data?.data?.also { uri ->
@@ -521,7 +369,7 @@ class AddQueryActivity : AppCompatActivity() {
 
                 returnCursor.close()
 
-                if (size >= 10240) {
+                if (size >= 51200) {
                     Toast.makeText(this, "Please select file less then 10MB", Toast.LENGTH_SHORT)
                         .show()
                 } else {
@@ -544,7 +392,7 @@ class AddQueryActivity : AppCompatActivity() {
         }
     }
 
-    fun renderPreview(uri: Uri, type: String) {
+    private fun renderPreview(uri: Uri, type: String) {
 
         filePreviewHolder.visibility = View.VISIBLE
         filePreview.removeAllViews()
@@ -576,7 +424,6 @@ class AddQueryActivity : AppCompatActivity() {
                 "16:9"
             }
 
-            Log.e("AddQuery", vratio)
             val customVideoView = CustomVideoView(
                 this, uri.toString(), false, false
             )
@@ -588,19 +435,20 @@ class AddQueryActivity : AppCompatActivity() {
             filePreview.addView(
                 customVideoView
             )
+
+            compressVideo(uri)
+
         } else if (type == "audio/mpeg" || type == "audio/x-matroska" || type == "audio/mp3" || type == "audio/ogg") {
             queryData.type = "audio"
             mFileType = "audio"
             Toast.makeText(this, "Audio selected", Toast.LENGTH_SHORT).show()
-            val customAudioView = CustomAudioView(
-                this, uri.toString(), false
-            )
-
-            customAudioView.setAudioSrc(uri)
+            this.customAudioView = CustomAudioView(this, uri.toString(), false)
+            this.customAudioView.setAudioSrc(uri)
 
             filePreview.addView(
-                customAudioView
+                this.customAudioView
             )
+
         } else {
 
             filePreviewHolder.visibility = View.GONE
@@ -610,6 +458,73 @@ class AddQueryActivity : AppCompatActivity() {
             Toast.makeText(
                 this, "Invalid file, Only image,videos and audio supports", Toast.LENGTH_SHORT
             ).show()
+        }
+    }
+
+    @SuppressLint("MissingInflatedId")
+    private fun compressVideo(uri: Uri) {
+
+        val view: View =
+            LayoutInflater.from(this@AddQueryActivity).inflate(R.layout.dialog_common_loading, null)
+        val builder: androidx.appcompat.app.AlertDialog.Builder =
+            androidx.appcompat.app.AlertDialog
+                .Builder(this@AddQueryActivity).setView(view)
+                .setView(view)
+
+        val dialogText = view.findViewById<MaterialTextView>(R.id.dialogLoadingText)
+        val dialogProgress = view.findViewById<ProgressBar>(R.id.dialogProgress)
+        dialogProgress.isIndeterminate = false
+        dialogProgress.max = 100
+        dialogProgress.progress = 0
+        dialogText.text = "Compressing your video"
+        val dialog = builder.show()
+
+        GlobalScope.launch {
+            VideoCompressor.start(
+                context = applicationContext, // => This is required
+                uris = listOf(uri), // => Source can be provided as content uris
+                isStreamable = true,
+                storageConfiguration = StorageConfiguration(
+                    saveAt = Environment.DIRECTORY_MOVIES, // => the directory to save the compressed video(s). Will be ignored if isExternal = false.
+                    isExternal = true // => false means save at app-specific file directory. Default is true.
+                ),
+                configureWith = Configuration(
+                    quality = VideoQuality.LOW,
+                    isMinBitrateCheckEnabled = false,
+                    disableAudio = false, /*Boolean, or ignore*/
+                    keepOriginalResolution = true, /*Boolean, or ignore*/
+                ),
+                listener = object : CompressionListener {
+                    override fun onProgress(index: Int, percent: Float) {
+                        // Update UI with progress value
+                        runOnUiThread {
+                            dialogProgress.progress = percent.toInt()
+                        }
+                    }
+
+                    override fun onStart(index: Int) {
+                        // Compression start
+                    }
+
+                    override fun onSuccess(index: Int, size: Long, path: String?) {
+                        dialog.dismiss()
+                        val base = AppHelper(this@AddQueryActivity).fileUriToBase64(
+                            Uri.fromFile(File(path.toString())),
+                            applicationContext.contentResolver
+                        )!!
+                        mFileBase64 = "data:video/mpeg;base64,$base"
+                    }
+
+                    override fun onFailure(index: Int, failureMessage: String) {
+                        // On Failure
+                    }
+
+                    override fun onCancelled(index: Int) {
+                        // On Cancelled
+                    }
+
+                }
+            )
         }
     }
 
@@ -654,51 +569,11 @@ class AddQueryActivity : AppCompatActivity() {
         return Base64.encodeToString(b, Base64.DEFAULT)
     }
 
-    fun addQuery(title: String, content: String, category: String, crops: String, region: String) {
-
-        val currentuser = FirebaseAuth.getInstance().currentUser!!.uid
-
-        val stringRequest = @SuppressLint("Range") object : StringRequest(Method.POST,
-            "https://asktoagri.planckstudio.in/api/v1/",
-            Response.Listener {
-                try {
-                    val jsonObject = JSONObject(it)
-                    val rStatus = jsonObject.getJSONObject("result").getInt("code")
-                    if (rStatus == 200) {
-                        Toast.makeText(this, "Query submitted", Toast.LENGTH_SHORT).show()
-                        startActivity(Intent(this, MainActivity::class.java))
-                    }
-                } catch (e: JSONException) {
-                    //
-                }
-            },
-            Response.ErrorListener {
-                Log.e("CRAFTY", it.toString())
-            }) {
-
-            override fun getBody(): ByteArray {
-                val jsonBody = JSONObject()
-                val jsonQuery = JSONObject()
-                jsonQuery.put("task", "query")
-                jsonQuery.put(
-                    "data",
-                    JSONObject().put("title", title).put("content", content)
-                        .put("userId", currentuser).put("region", region).put("category", category)
-                        .put("crops", crops)
-                )
-                jsonBody.put("type", "add")
-                jsonBody.put("param", jsonQuery)
-                mQuery = jsonBody.toString()
-                return mQuery.toByteArray()
-            }
-        }
-        stringRequest.setShouldCache(false)
-        mRequestQueue.add(stringRequest)
-    }
-
     override fun onBackPressed() {
         super.onBackPressed()
-        audioView.pauseAudio()
-        pauseAudio()
+
+        if (queryData.type == "audio") {
+            customAudioView.pauseAudio()
+        }
     }
 }

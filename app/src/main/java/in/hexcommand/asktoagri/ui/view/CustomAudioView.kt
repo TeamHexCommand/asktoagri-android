@@ -21,7 +21,7 @@ class CustomAudioView : LinearLayout {
 
     var autoPlay: Boolean = false
     lateinit var audioSrc: String
-    private lateinit var mediaPlayer: MediaPlayer
+    lateinit var mediaPlayer: MediaPlayer
 
     lateinit var audioActionBtn: MaterialCardView
     lateinit var audioActionIcon: ImageView
@@ -52,8 +52,6 @@ class CustomAudioView : LinearLayout {
 
     private fun init() {
         inflate(context, R.layout.holder_audio, this)
-
-
 
         this.audioActionBtn = findViewById(R.id.audio_action)
         this.audioActionIcon = findViewById(R.id.audio_action_icon)
@@ -108,7 +106,6 @@ class CustomAudioView : LinearLayout {
                 e.printStackTrace()
             }
         }
-
     }
 
     private fun setPlayIcon() {
@@ -121,6 +118,7 @@ class CustomAudioView : LinearLayout {
 
     fun pauseAudio() {
         if (this.mediaPlayer.isPlaying) {
+            this.autoPlay = false
             audioProgress.progress = 0
             setPlayIcon()
             this.mediaPlayer.pause()
@@ -151,6 +149,7 @@ class CustomAudioView : LinearLayout {
     @DelicateCoroutinesApi
     fun playAudio() {
         if (this.audioSrc.isNotEmpty()) {
+            this.autoPlay = false
             this.mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC)
             try {
                 setStopIcon()

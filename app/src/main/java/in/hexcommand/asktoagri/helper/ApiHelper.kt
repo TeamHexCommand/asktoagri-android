@@ -1,9 +1,7 @@
 package `in`.hexcommand.asktoagri.helper
 
-import `in`.hexcommand.asktoagri.data.CategoryData
-import `in`.hexcommand.asktoagri.data.ConfigData
-import `in`.hexcommand.asktoagri.data.DistrictData
-import `in`.hexcommand.asktoagri.data.QueryData
+import `in`.hexcommand.asktoagri.data.*
+import `in`.hexcommand.asktoagri.model.Crops
 import `in`.hexcommand.asktoagri.model.Upload
 import `in`.hexcommand.asktoagri.model.User
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
@@ -21,6 +19,7 @@ import kotlinx.coroutines.async
 import org.json.JSONObject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
+
 
 class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
 
@@ -41,7 +40,8 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
         request: String,
         type: String,
         filter: String,
-        param: JSONObject
+        param: JSONObject,
+        header: Boolean = true
     ) =
         suspendCoroutine<String> { r ->
             val waitFor = CoroutineScope(Dispatchers.IO).async {
@@ -72,7 +72,7 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
 
 //                    @Throws(AuthFailureError::class)
 //                    override fun getHeaders(): Map<String, String> {
-//                        return header
+//                        return AppHelper(context).getHeaders()
 //                    }
                 }
                 stringRequest.setShouldCache(false)
@@ -186,12 +186,58 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
         )
     }
 
+    suspend fun addSolution(model: SolutionData): String {
+        return ApiHelper(context).sendRequest(
+            "add",
+            "solution",
+            "",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
     suspend fun getAllCrops(): String {
         return ApiHelper(context).sendRequest(
             "get",
             "crops",
             "getAll",
             JSONObject()
+        )
+    }
+
+    suspend fun getCropsById(model: Crops): String {
+        return ApiHelper(context).sendRequest(
+            "get",
+            "crops",
+            "getById",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
+    suspend fun getQueryById(model: QueryData): String {
+        return ApiHelper(context).sendRequest(
+            "get",
+            "query",
+            "getById",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
+    suspend fun getSolutionById(model: SolutionData): String {
+        return ApiHelper(context).sendRequest(
+            "get",
+            "solution",
+            "getById",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
+
+    suspend fun getDistrictById(model: DistrictData): String {
+        return ApiHelper(context).sendRequest(
+            "get",
+            "district",
+            "getById",
+            JSONObject(Gson().toJson(model))
         )
     }
 
@@ -255,6 +301,33 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
             "upload",
             "",
             JSONObject(Gson().toJson(model))
+        )
+    }
+
+    suspend fun getLatestUserQuery(model: QueryData): String {
+        return ApiHelper(context).sendRequest(
+            "get",
+            "query",
+            "getByUser",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
+    suspend fun updateQuerySolution(model: QueryData): String {
+        return ApiHelper(context).sendRequest(
+            "update",
+            "query",
+            "updateSolution",
+            JSONObject(Gson().toJson(model))
+        )
+    }
+
+    suspend fun getNotResolvedQuery(): String {
+        return ApiHelper(context).sendRequest(
+            "get",
+            "query",
+            "getByNotResolved",
+            JSONObject()
         )
     }
 

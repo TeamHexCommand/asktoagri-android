@@ -1,25 +1,25 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
     <item
-        android:id="@+id/pageUserHome"
+        android:id="@+id/pageExpertHome"
         android:enabled="true"
         android:icon="@drawable/round_home_24"
         android:title="Home"
         tools:ignore="HardcodedText" />
     <item
-        android:id="@+id/pageTrending"
+        android:id="@+id/pageExpertTrending"
         android:enabled="true"
         android:icon="@drawable/round_trending_up_24"
         android:title="Trending"
         tools:ignore="HardcodedText" />
     <item
-        android:id="@+id/pageAdd"
+        android:id="@+id/pageExpertAdd"
         android:enabled="true"
         android:icon="@drawable/round_add_24"
         android:title="Add"
         tools:ignore="HardcodedText" />
     <item
-        android:id="@+id/pageArticle"
+        android:id="@+id/pageExpertQuery"
         android:enabled="true"
         android:icon="@drawable/round_article_24"
         android:title="Query"

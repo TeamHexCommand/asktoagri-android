@@ -5,6 +5,7 @@ import android.content.Context
 import android.media.MediaPlayer
 import android.net.Uri
 import android.util.AttributeSet
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.MediaController
 import android.widget.VideoView
@@ -66,8 +67,8 @@ class CustomVideoView : LinearLayout {
     private fun setView() {
         mediaController.setAnchorView(videoView)
         mediaController.setMediaPlayer(videoView)
-        videoView.seekTo(1)
-        mediaController.hide()
+//        videoView.seekTo(1)
+//        mediaController.hide()
 
         if (this.autoPlay) {
             videoView.start()
@@ -82,6 +83,11 @@ class CustomVideoView : LinearLayout {
         videoView.setOnClickListener {
             videoView.start()
             videoView.setMediaController(mediaController)
+        }
+
+        videoView.setOnErrorListener { mp, what, extra ->
+            videoView.visibility = View.GONE
+            true
         }
 
     }

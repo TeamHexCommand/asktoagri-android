@@ -110,67 +110,6 @@
 
             </LinearLayout>
 
-            <in.hexcommand.asktoagri.ui.view.QueryCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                app:caption="Common"
-                app:file_url="https://sklktecdnems02.cdnsrv.jio.com/jiosaavn.cdn.jio.com/799/c7fcdb5d33731d6d044462b7e29970c9_96.mp4"
-                app:query_id="0"
-                app:title="@string/caption"
-                app:type="audio" />
-
-            <in.hexcommand.asktoagri.ui.view.QueryCardView
-                android:id="@+id/custom_query_card"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                app:caption="Common"
-                app:file_url="https://"
-                app:query_id="0"
-                app:title="@string/caption"
-                app:type="image" />
-
-            <in.hexcommand.asktoagri.ui.view.QueryCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                app:caption="Common"
-                app:file_url="https://"
-                app:query_id="0"
-                app:title="@string/caption"
-                app:type="video" />
-
-            <in.hexcommand.asktoagri.ui.view.QueryCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                app:caption="Common"
-                app:file_url="https://www.soundhelix.com/examples/mp3/SoundHelix-Song-17.mp3"
-                app:query_id="0"
-                app:title="@string/caption"
-                app:type="audio" />
-
-            <in.hexcommand.asktoagri.ui.view.QueryCardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="24dp"
-                android:layout_marginTop="24dp"
-                android:layout_marginEnd="24dp"
-                app:caption="Common"
-                app:file_url="https://"
-                app:query_id="0"
-                app:title="@string/caption"
-                app:type="text" />
-
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/trending_article_main"
                 android:layout_width="match_parent"

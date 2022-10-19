@@ -16,6 +16,7 @@ class CustomQueryCardView : LinearLayout {
     lateinit var category: String
     lateinit var title: String
     lateinit var file: String
+    var cardType: String = "query"
     var autoplay: Boolean = false
 
     lateinit var mShareBtn: MaterialButton
@@ -36,13 +37,15 @@ class CustomQueryCardView : LinearLayout {
         category: String,
         title: String,
         file: String,
-        autoplay: Boolean = false
+        autoplay: Boolean = false,
+        cardType: String = "query"
     ) : super(context) {
         this.type = type
         this.category = category
         this.title = title
         this.file = file
         this.autoplay = autoplay
+        this.cardType = cardType
         init()
     }
 
@@ -113,7 +116,7 @@ class CustomQueryCardView : LinearLayout {
             }
         }
 
-        mCategoryText.text = "${this.category} • ${type} query"
+        mCategoryText.text = "${this.category} • ${type} ${cardType}"
         mTitleText.text = this.title
 
         mShareBtn.setOnClickListener {
@@ -126,6 +129,12 @@ class CustomQueryCardView : LinearLayout {
 
         mCardHolder.setOnClickListener {
             Toast.makeText(context, "Open query", Toast.LENGTH_SHORT).show()
+        }
+
+        mCardHolder.apply {
+            alpha = 0f
+            visibility = View.VISIBLE
+            animate().alpha(1f).setDuration(1000).setListener(null)
         }
     }
 }

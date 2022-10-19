@@ -49,7 +49,7 @@
         </LinearLayout>
 
         <com.google.android.material.card.MaterialCardView
-            android:id="@+id/redeem"
+            android:visibility="gone"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -111,24 +111,15 @@
         tools:targetApi="m" />
 
 
-    <com.google.android.material.card.MaterialCardView
-        android:visibility="gone"
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/expertBottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        app:cardElevation="0dp"
-        app:shapeAppearanceOverlay="@style/ShapeBottomBar"
-        tools:ignore="RtlSymmetry">
-
-        <com.google.android.material.bottomnavigation.BottomNavigationView
-            android:background="@color/white"
-            android:id="@+id/mainBottomNav"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:layout_marginTop="0dp"
-            android:paddingStart="16dp"
-            android:paddingEnd="16dp"
-            app:menu="@menu/bottom_navigation_menu_expert" />
-    </com.google.android.material.card.MaterialCardView>
+        android:layout_marginTop="0dp"
+        android:background="@color/white"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        app:menu="@menu/expert_bottom_bar" />
 
 </RelativeLayout>
