@@ -21,6 +21,7 @@ import android.location.Geocoder
 import android.net.Uri
 import android.provider.Settings.Secure
 import android.util.Base64
+import android.util.Log
 import com.android.volley.toolbox.Volley
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
@@ -59,7 +60,7 @@ class AppHelper(private val context: Context) {
             val data = JSONObject(ls.getValueString("remote_config"))
             return data.getJSONObject("url").getString("api")
         } catch (e: JSONException) {
-            return context.getString(R.string.api_url).decode()
+            return context.getString(R.string.apiUrl)
         }
     }
 
@@ -103,10 +104,15 @@ class AppHelper(private val context: Context) {
 
     @OptIn(DelicateCoroutinesApi::class)
     fun getRemoteConfig(url: String) {
-        GlobalScope.launch(Dispatchers.IO) {
-            val res =
-                async { ApiHelper(context).sendGetRequest(url.decode()) }
-            ls.save("remote_config", res.await())
+        GlobalScope.launch {
+            withContext(Dispatchers.Default) {
+                launch {
+                    val res =
+                        async { ApiHelper(context).sendGetRequest(url.decode()) }.await()
+                    ls.save("remote_config", res)
+                    Log.e("APP", res)
+                }
+            }
         }
     }
 
@@ -140,15 +146,20 @@ class AppHelper(private val context: Context) {
 
     fun storeTrendingArtical() {
         GlobalScope.launch {
-            val data =
-                JSONObject(async { ApiHelper(context).getTrendingArtical() }.await())
-                    .getJSONObject("result").getJSONArray("data")
+            try {
+                val data =
+                    JSONObject(async { ApiHelper(context).getTrendingArtical() }.await())
+                        .getJSONObject("result").getJSONArray("data")
 
-            (0 until data.length()).forEach { i ->
-                val articalData =
-                    Gson().fromJson(data.getJSONObject(i).toString(), ArticalData::class.java)
-                articalDb.insert(articalData)
+                (0 until data.length()).forEach { i ->
+                    val articalData =
+                        Gson().fromJson(data.getJSONObject(i).toString(), ArticalData::class.java)
+                    articalDb.insert(articalData)
+                }
+            }catch (e: JSONException) {
+                //
             }
+
         }
     }
 

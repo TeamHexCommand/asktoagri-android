@@ -52,6 +52,8 @@ class MainActivity : AppCompatActivity() {
 
         val categoryData = CategoryData(id = 1)
 
+        AppHelper(this@MainActivity).getRemoteConfig(getString(R.string.config_url))
+
         GlobalScope.launch {
             val category: CategoryData? = withContext(Dispatchers.Default) {
                 return@withContext async { AppHelper(this@MainActivity).getCategoryById(categoryData) }.await()

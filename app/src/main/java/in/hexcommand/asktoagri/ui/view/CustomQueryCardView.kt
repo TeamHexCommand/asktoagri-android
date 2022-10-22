@@ -131,10 +131,10 @@ class CustomQueryCardView : LinearLayout {
             Toast.makeText(context, "Open query", Toast.LENGTH_SHORT).show()
         }
 
-        mCardHolder.apply {
-            alpha = 0f
-            visibility = View.VISIBLE
-            animate().alpha(1f).setDuration(1000).setListener(null)
-        }
+//        mCardHolder.apply {
+//            alpha = 0f
+//            visibility = View.VISIBLE
+//            animate().alpha(1f).setDuration(1000).setListener(null)
+//        }
     }
 }

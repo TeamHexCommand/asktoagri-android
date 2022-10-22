@@ -45,6 +45,9 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
     ) =
         suspendCoroutine<String> { r ->
             val waitFor = CoroutineScope(Dispatchers.IO).async {
+
+                Log.e("API", AppHelper(context).getApiUrl())
+
                 val stringRequest = object : StringRequest(
                     Method.POST,
                     AppHelper(context).getApiUrl(),
@@ -81,47 +84,6 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
         }
 
 
-    private suspend fun sendMultipartRequest(
-        request: String,
-        type: String,
-        filter: String,
-        param: JSONObject
-    ) =
-        suspendCoroutine<String> { r ->
-            val waitFor = CoroutineScope(Dispatchers.IO).async {
-
-                val stringRequest = object : StringRequest(
-                    Method.POST,
-                    AppHelper(context).getApiUrl(),
-                    Response.Listener {
-                        Log.e("API", it)
-                        r.resume(it)
-                    },
-                    Response.ErrorListener {
-                        r.resume(it.toString())
-                    }) {
-
-                    override fun getBody(): ByteArray {
-                        return JSONObject()
-                            .put("request", request)
-                            .put("type", type)
-                            .put("filter", filter)
-                            .put("param", param)
-                            .toString()
-                            .toByteArray()
-                    }
-
-//                    @Throws(AuthFailureError::class)
-//                    override fun getHeaders(): Map<String, String> {
-//                        return header
-//                    }
-                }
-                stringRequest.setShouldCache(false)
-                mRequestQueue.add(stringRequest)
-            }
-        }
-
-
     public suspend fun sendGetRequest(
         url: String,
         header: HashMap<String, String> = HashMap()
@@ -137,10 +99,10 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
                     Response.ErrorListener {
                         r.resume(it.toString())
                     }) {
-                    @Throws(AuthFailureError::class)
-                    override fun getHeaders(): Map<String, String> {
-                        return header
-                    }
+//                    @Throws(AuthFailureError::class)
+//                    override fun getHeaders(): Map<String, String> {
+//                        return header
+//                    }
                 }
                 stringRequest.setShouldCache(false)
                 mRequestQueue.add(stringRequest)

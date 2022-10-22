@@ -30,8 +30,9 @@ class SplashActivity : AppCompatActivity() {
         ls = LocalStorage(this)
         ah = AppHelper(this)
 
-        ah.getFCMToken()
         ah.getRemoteConfig(getString(R.string.config_url))
+        ah.getFCMToken()
+
 
         if (!ls.getValueBoolean("show_onboard")) {
             ls.save("latitude", "0")

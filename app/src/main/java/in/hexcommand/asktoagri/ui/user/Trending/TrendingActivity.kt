@@ -1,6 +1,7 @@
 package `in`.hexcommand.asktoagri.ui.user.Trending
 
 import `in`.hexcommand.asktoagri.R
+import `in`.hexcommand.asktoagri.data.ArticalData
 import `in`.hexcommand.asktoagri.data.CategoryData
 import `in`.hexcommand.asktoagri.database.ArticalDatabase
 import `in`.hexcommand.asktoagri.helper.ApiHelper
@@ -15,6 +16,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.card.MaterialCardView
+import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.json.JSONException
@@ -80,56 +82,50 @@ class TrendingActivity : AppCompatActivity() {
                     "result"
                 ).getJSONArray("data")
 
-            articalDb.getAllArtical().collect() { articalList ->
-                if (articalList.isNotEmpty()) {
-                    (0 until articalList.size).forEach { i ->
-
-                        val articalData = articalList.get(i)
-
-//                        val articalData = Gson().fromJson(
-//                            res.getJSONObject(i).toString(), ArticalData::class.java
-//                        )
-
-                        val img = JSONObject(async {
-                            ApiHelper(this@TrendingActivity).getUploadById(
-                                Upload(id = articalData.image)
-                            )
-                        }.await()).getJSONObject("result").getJSONArray("data").getJSONObject(0)
-
-                        val category = JSONObject(async {
-                            ApiHelper(this@TrendingActivity).getCategoryById(
-                                CategoryData(id = articalData.category)
-                            )
-                        }.await()).getJSONObject("result").getJSONArray("data").getJSONObject(0)
-                            .getString("name")
-
-
-                        val image =
-                            "${AppHelper(this@TrendingActivity).getConfigUrl("uploads")}${
-                                img.getString("name")
-                            }.${img.getString("type")}"
-
-                        val trendingModel = TrendingModel(
-                            articalData.id,
-                            articalData.name,
-                            category,
-                            articalData.tags,
-                            image,
-                            articalData.body
-                        )
-                        mTrendingList.add(trendingModel)
-                    }
-
-                    runOnUiThread {
-                        mTrendingAdapter.notifyDataSetChanged()
-                    }
-                }
-            }
-
 
             try {
 
+                (0 until res.length()).forEach { i ->
 
+//                        val articalData = articalList.get(i)
+
+                    val articalData = Gson().fromJson(
+                        res.getJSONObject(i).toString(), ArticalData::class.java
+                    )
+
+                    val img = JSONObject(async {
+                        ApiHelper(this@TrendingActivity).getUploadById(
+                            Upload(id = articalData.image)
+                        )
+                    }.await()).getJSONObject("result").getJSONArray("data").getJSONObject(0)
+
+                    val category = JSONObject(async {
+                        ApiHelper(this@TrendingActivity).getCategoryById(
+                            CategoryData(id = articalData.category)
+                        )
+                    }.await()).getJSONObject("result").getJSONArray("data").getJSONObject(0)
+                        .getString("name")
+
+
+                    val image =
+                        "${AppHelper(this@TrendingActivity).getConfigUrl("uploads")}${
+                            img.getString("name")
+                        }.${img.getString("type")}"
+
+                    val trendingModel = TrendingModel(
+                        articalData.id,
+                        articalData.name,
+                        category,
+                        articalData.tags,
+                        image,
+                        articalData.body
+                    )
+                    mTrendingList.add(trendingModel)
+                }
+
+                runOnUiThread {
+                    mTrendingAdapter.notifyDataSetChanged()
+                }
             } catch (e: JSONException) {
                 Log.e("OnBoard", "Error")
             }

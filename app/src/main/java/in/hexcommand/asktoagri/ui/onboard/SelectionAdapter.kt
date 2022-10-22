@@ -30,11 +30,11 @@ class SelectionAdapter(
 
         fun initialize(item: SelectionModel, action: OnBoardSelectionActivity) {
 
-            selectionCard.apply {
-                alpha = 0f
-                visibility = View.VISIBLE
-                animate().alpha(1f).setDuration(1000).setListener(null)
-            }
+//            selectionCard.apply {
+//                alpha = 0f
+//                visibility = View.VISIBLE
+//                animate().alpha(1f).setDuration(1000).setListener(null)
+//            }
 
             selectionCard.setOnClickListener {
                 action.onItemClick(it as MaterialCardView, item, adapterPosition)

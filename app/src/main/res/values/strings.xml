@@ -43,7 +43,7 @@
     <string name="expert">Expert</string>
     <string name="caption">eque porro quisquam est qui dolorem</string>
     <string name="tags">#tag1 #tag2 #tag3</string>
-    <string name="apiUrl" translatable="false">https://asktoagri.planckstudio.in/api/v1/</string>
+    <string name="apiUrl" translatable="false">http://beta.planckstudio.in/asktoagri/api/public/</string>
     <string name="btn_camera">Click here to capture a photo</string>
     <string name="msg_ban">Your account is restricated</string>
 

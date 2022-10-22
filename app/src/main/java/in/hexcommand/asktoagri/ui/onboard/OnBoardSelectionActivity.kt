@@ -137,7 +137,10 @@ class OnBoardSelectionActivity : AppCompatActivity() {
                     runOnUiThread {
                         mSelectionAdapter.notifyDataSetChanged()
                     }
+
                 }
+
+
             } catch (e: JSONException) {
                 Log.e("OnBoard", "Error")
             }
