@@ -87,7 +87,7 @@ class LoginActivity : AppCompatActivity() {
                 "Login",
                 "${addressModel.getPincode()} village: ${addressModel.getVillage()} Dis=${addressModel.getDistrict()} City: ${addressModel.getCity()}"
             )
-        } catch (e: NumberFormatException) {
+        } catch (e: Exception) {
             Log.e(TAG, "Failed to get location")
         }
 
