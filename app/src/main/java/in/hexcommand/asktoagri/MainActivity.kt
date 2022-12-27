@@ -91,7 +91,7 @@ class MainActivity : AppCompatActivity() {
                         Intent(this, QueryListActivity::class.java).putExtra(
                             "filter",
                             "userQuery"
-                        )
+                        ).putExtra("title", resources.getString(R.string.title_query_list_farmer))
                     )
 //                    )
                     true

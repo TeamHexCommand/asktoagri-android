@@ -12,6 +12,7 @@ import `in`.hexcommand.asktoagri.model.AddressModel
 import `in`.hexcommand.asktoagri.model.Crops
 import `in`.hexcommand.asktoagri.model.Upload
 import `in`.hexcommand.asktoagri.model.User
+import `in`.hexcommand.asktoagri.util.SecurityUtil
 import `in`.hexcommand.asktoagri.util.shared.LocalStorage
 import android.annotation.SuppressLint
 import android.content.ContentResolver
@@ -19,9 +20,12 @@ import android.content.Context
 import android.location.Address
 import android.location.Geocoder
 import android.net.Uri
+import android.os.Build
+import android.os.Environment
 import android.provider.Settings.Secure
 import android.util.Base64
 import android.util.Log
+import androidx.annotation.RequiresApi
 import com.android.volley.toolbox.Volley
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.messaging.FirebaseMessaging
@@ -29,9 +33,7 @@ import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.json.JSONException
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.io.IOException
-import java.io.InputStream
+import java.io.*
 import java.util.*
 
 
@@ -254,13 +256,14 @@ class AppHelper(private val context: Context) {
     }
 
     @SuppressLint("HardwareIds")
-    fun getHeaders(): Map<String, String> {
+    fun getHeaders(body: String = ""): Map<String, String> {
 
         val hashMap = HashMap<String, String>()
 
         if (ls.getValueBoolean("is_login")) {
-            hashMap["x-user-token"] = ls.getValueString("user_token")
-            hashMap["x-user-id"] = ls.getValueString("user_id")
+//            hashMap["X-USER-TOKEN"] = ls.getValueString("user_token")
+            hashMap["X-USER-ID"] = ls.getValueString("user_id")
+            hashMap["SHA256"] = SecurityUtil(context).getSHA256(body, ls.getValueString("user_token"))
         }
 
         val android_id = Secure.getString(
@@ -268,7 +271,7 @@ class AppHelper(private val context: Context) {
             Secure.ANDROID_ID
         )
 
-        hashMap["x-user-device"] = android_id
+        hashMap["X-USER-DEVICE"] = android_id
         return hashMap
     }
 

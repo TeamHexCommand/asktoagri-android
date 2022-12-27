@@ -46,6 +46,10 @@
     <string name="apiUrl" translatable="false">http://beta.planckstudio.in/asktoagri/api/public/</string>
     <string name="btn_camera">Click here to capture a photo</string>
     <string name="msg_ban">Your account is restricated</string>
+    <string name="title_query_list_default">Query</string>
+    <string name="title_query_list_user">Your Query</string>
+    <string name="title_query_list_farmer">Your Query</string>
+    <string name="title_query_list_expert">User Query</string>
 
     <string-array name="category_list">
         <item>Soil Problem</item>

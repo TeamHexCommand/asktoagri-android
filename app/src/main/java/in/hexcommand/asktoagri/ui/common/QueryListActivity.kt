@@ -14,6 +14,7 @@ import android.os.Bundle
 import android.util.Log
 import android.widget.LinearLayout
 import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.appbar.MaterialToolbar
 import com.google.gson.Gson
 import kotlinx.coroutines.*
 import org.json.JSONObject
@@ -22,6 +23,7 @@ class QueryListActivity : AppCompatActivity() {
 
     private lateinit var mListHolder: LinearLayout
     private lateinit var mListAdapter: ArrayList<QueryData>
+    private lateinit var mTopAppBar: MaterialToolbar
     private lateinit var api: ApiHelper
     private lateinit var ls: LocalStorage
     private lateinit var app: AppHelper
@@ -38,6 +40,7 @@ class QueryListActivity : AppCompatActivity() {
         ls = LocalStorage(this)
         app = AppHelper(this)
 
+        mTopAppBar = findViewById(R.id.queryListTopAppBar)
         mListHolder = findViewById(R.id.queryListHolder)
         mListAdapter = ArrayList()
     }
@@ -51,6 +54,11 @@ class QueryListActivity : AppCompatActivity() {
         if (extra != null) {
             if (intent.hasExtra("filter")) {
                 renderList(intent.getStringExtra("filter").toString())
+            }
+            if(intent.hasExtra("title")) {
+                mTopAppBar.title = intent.getStringExtra("title").toString()
+            } else {
+                mTopAppBar.title = resources.getString(R.string.title_query_list_default)
             }
         }
     }

@@ -68,7 +68,7 @@ class ExpertActivity : AppCompatActivity() {
                         Intent(this, QueryListActivity::class.java).putExtra(
                             "filter",
                             "notResolved"
-                        )
+                        ).putExtra("title", resources.getString(R.string.title_query_list_expert))
                     )
                     true
                 }

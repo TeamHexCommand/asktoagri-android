@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="msg_ban">Your account is restricated</string>
+    <string name="title_query_list_default">Query</string>
+    <string name="title_query_list_user">Your Query</string>
+    <string name="title_query_list_farmer">Your Query</string>
+    <string name="title_query_list_expert">User Query</string>
 </resources>

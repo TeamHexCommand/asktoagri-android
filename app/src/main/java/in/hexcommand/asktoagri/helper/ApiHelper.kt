@@ -68,21 +68,24 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
                             .put("param", param)
                             .toString()
 
+                        mQuery = rqst.toString()
+
                         Log.e("API", rqst.toString())
 
                         return rqst.toByteArray()
                     }
 
-//                    @Throws(AuthFailureError::class)
-//                    override fun getHeaders(): Map<String, String> {
-//                        return AppHelper(context).getHeaders()
-//                    }
+                    @Throws(AuthFailureError::class)
+                    override fun getHeaders(): Map<String, String> {
+                        val he = AppHelper(context).getHeaders(mQuery)
+                        Log.e("API", he.toString())
+                        return he
+                    }
                 }
                 stringRequest.setShouldCache(false)
                 mRequestQueue.add(stringRequest)
             }
         }
-
 
     public suspend fun sendGetRequest(
         url: String,

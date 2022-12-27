@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1045504657432-82ajtj897qicpm2rl2ne2e27q9rnfoa5.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "in.hexcommand.asktoagri",
+            "certificate_hash": "00a013b197e3da2655e8b6086a4e00ecfffa710e"
+          }
+        },
+        {
           "client_id": "1045504657432-c0cane28odq4tmlbepmfalg3g627fqur.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -67,5 +75,6 @@
       }
     }
   ],
-  "configuration_version": "1"
+  "configuration_version": "1",
+
 }
