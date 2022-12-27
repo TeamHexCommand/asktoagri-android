@@ -14,7 +14,7 @@
       },
       "oauth_client": [
         {
-          "client_id": "1045504657432-82ajtj897qicpm2rl2ne2e27q9rnfoa5.apps.googleusercontent.com",
+          "client_id": "1045504657432-aet16ke6br63qsi9565apb6rmlpeoer7.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "in.hexcommand.asktoagri",
@@ -22,35 +22,11 @@
           }
         },
         {
-          "client_id": "1045504657432-c0cane28odq4tmlbepmfalg3g627fqur.apps.googleusercontent.com",
+          "client_id": "1045504657432-kc9r8brr43d7n7fd0fvh7395qh0prkj9.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "in.hexcommand.asktoagri",
-            "certificate_hash": "bc1133fdc408ce4be51c2ea24d60d87148a670dd"
-          }
-        },
-        {
-          "client_id": "1045504657432-imqbh4bkn7u6aepaguop4l0smata71ah.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "in.hexcommand.asktoagri",
-            "certificate_hash": "3b2d0c4d7243e3630c58c03ba0e9e15e1207926a"
-          }
-        },
-        {
-          "client_id": "1045504657432-qkas7hav3ovc81g3gb61p3hq7hp5g2gb.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "in.hexcommand.asktoagri",
-            "certificate_hash": "27694d7834303ac8236aa60269f400d7dbd1f82c"
-          }
-        },
-        {
-          "client_id": "1045504657432-rm3lrsuo80kotk37dmhcf1ff53i8r2cc.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "in.hexcommand.asktoagri",
-            "certificate_hash": "0886e6f95a03c1747fc84015664de7daa73d7604"
+            "certificate_hash": "af7c2d7e8d3dfa0b50e4adb3ab41183656a74fe2"
           }
         },
         {
@@ -75,6 +51,5 @@
       }
     }
   ],
-  "configuration_version": "1",
-
+  "configuration_version": "1"
 }

@@ -69,18 +69,16 @@ class ApiHelper(context: Context) : NetworkHelper(context), NetworkResponse {
                             .toString()
 
                         mQuery = rqst.toString()
-
                         Log.e("API", rqst.toString())
-
                         return rqst.toByteArray()
                     }
-
-                    @Throws(AuthFailureError::class)
-                    override fun getHeaders(): Map<String, String> {
-                        val he = AppHelper(context).getHeaders(mQuery)
-                        Log.e("API", he.toString())
-                        return he
-                    }
+//
+//                    @Throws(AuthFailureError::class)
+//                    override fun getHeaders(): Map<String, String> {
+//                        val he = AppHelper(context).getHeaders(mQuery)
+//                        Log.e("API", he.toString())
+//                        return he
+//                    }
                 }
                 stringRequest.setShouldCache(false)
                 mRequestQueue.add(stringRequest)
